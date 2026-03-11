@@ -1,0 +1,5 @@
+{
+  "name": "EV BMS Dashboard",
+  "description": "A futuristic, dark-themed EV Battery Management System dashboard visualizing ESP32/Firebase data including Edge AI predictions, thermal management, and anomaly detection.",
+  "requestFramePermissions": []
+}
