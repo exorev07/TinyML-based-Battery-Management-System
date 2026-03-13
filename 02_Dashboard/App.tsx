@@ -102,6 +102,7 @@ const App = () => {
               <div className="flex flex-col items-center">
                 <span className="text-xs text-cyphgray uppercase tracking-widest mb-2 font-bold">State of Health</span>
                 <span className="text-6xl font-handjet font-extralight text-emerald-500">{data.soh}%</span>
+                <span className="text-[10px] text-cyphgray uppercase tracking-widest font-black mt-1">RUL: {data.rulCycles} Cycles / ~{data.rulDays} Days</span>
               </div>
               <div className="hidden md:block w-px h-12 bg-dark-700/50"></div>
               <div className="flex flex-col items-center">
@@ -109,14 +110,28 @@ const App = () => {
                 <span className="text-6xl font-handjet font-extralight text-blue-400">{data.power}W</span>
               </div>
             </div>
+            
+            {/* System Status Indicators */}
+            <div className="flex justify-center gap-8 mt-2 pt-4 border-t border-dark-700/30">
+              <div className="flex items-center gap-2">
+                <Fan size={16} className={`${data.fanStatus ? 'text-blue-400 animate-spin' : 'text-cyphgray'} transition-colors`} />
+                <span className="text-[10px] text-cyphgray uppercase tracking-widest font-black">
+                  FAN: <span className={data.fanStatus ? 'text-blue-400' : 'text-cyphgray'}>{data.fanStatus ? 'ACTIVE' : 'IDLE'}</span>
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <ShieldCheck size={16} className={`${data.relayStatus === 'CONNECTED' ? 'text-emerald-500' : 'text-red-500'} transition-colors`} />
+                <span className="text-[10px] text-cyphgray uppercase tracking-widest font-black">
+                  RELAY: <span className={data.relayStatus === 'CONNECTED' ? 'text-emerald-500' : 'text-red-500'}>{data.relayStatus}</span>
+                </span>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Quick Alerts Side panel */}
         <div className="lg:col-span-4 flex flex-col gap-6 self-stretch">
-           <div className="h-full bg-dark-800/30 backdrop-blur-md rounded-2xl border border-dark-700/50 overflow-hidden shadow-xl">
-             <AlertPanel alerts={alerts} isMini onViewAll={() => setCurrentView('logs')} />
-           </div>
+          <AlertPanel alerts={alerts} isMini onViewAll={() => setCurrentView('logs')} />
         </div>
       </div>
 
@@ -133,6 +148,9 @@ const App = () => {
           <div className="flex justify-center items-baseline gap-2 -mt-2">
             <span className="text-5xl font-handjet font-extralight text-white">{data.remainingRangeKm}</span>
             <span className="text-[10px] text-cyphgray uppercase font-black">KM REMAINING</span>
+            <span className="text-[10px] text-cyphgray font-black mx-2">|</span>
+            <span className="text-2xl font-handjet font-extralight text-amethyst-400">{data.remainingTimeMinutes}</span>
+            <span className="text-[10px] text-cyphgray uppercase font-black">MINUTES</span>
           </div>
           <div className="flex-1 w-full">
             <ResponsiveContainer width="100%" height="100%">
@@ -202,7 +220,7 @@ const App = () => {
             SENSOR DATA
           </h2>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4">
           <div className="bg-dark-800/40 border border-dark-700/50 rounded-xl p-4 flex flex-col justify-between hover:bg-dark-800/60 transition-colors">
             <div className="flex justify-between items-center mb-1">
               <span className="text-[10px] text-cyphgray uppercase font-bold tracking-tighter">Voltage</span>
@@ -261,6 +279,27 @@ const App = () => {
             <div className="flex items-baseline gap-1">
               <span className="text-3xl font-handjet font-extralight">{data.coolantInletTemp}</span>
               <span className="text-[9px] text-cyphgray uppercase">°C</span>
+            </div>
+          </div>
+          <div className="bg-dark-800/40 border border-dark-700/50 rounded-xl p-4 flex flex-col justify-between hover:bg-dark-800/60 transition-colors">
+            <div className="flex justify-between items-center mb-1">
+              <span className="text-[10px] text-cyphgray uppercase font-bold tracking-tighter">Humidity</span>
+              <Droplets size={12} className="text-cyan-400" />
+            </div>
+            <div className="flex items-baseline gap-1">
+              <span className="text-3xl font-handjet font-extralight">{data.humidity.toFixed(0)}</span>
+              <span className="text-[9px] text-cyphgray uppercase">%</span>
+            </div>
+          </div>
+          <div className="bg-dark-800/40 border border-dark-700/50 rounded-xl p-4 flex flex-col justify-between hover:bg-dark-800/60 transition-colors flex-1 w-full relative overflow-hidden group">
+            <div className={`absolute inset-0 bg-red-500/5 opacity-0 ${data.pressure > 1025 ? 'opacity-100 animate-pulse' : 'group-hover:opacity-10'} transition-opacity`}></div>
+            <div className="flex justify-between items-center mb-1 relative z-10">
+              <span className="text-[10px] text-cyphgray uppercase font-bold tracking-tighter">Pressure</span>
+              {data.pressure > 1025 ? <ShieldAlert size={12} className="text-red-500" /> : <ShieldCheck size={12} className="text-emerald-500" />}
+            </div>
+            <div className="flex items-baseline gap-1 relative z-10">
+              <span className={`text-3xl font-handjet font-extralight ${data.pressure > 1025 ? 'text-red-400' : 'text-white'}`}>{data.pressure.toFixed(0)}</span>
+              <span className="text-[9px] text-cyphgray uppercase">hPa</span>
             </div>
           </div>
         </div>
@@ -323,7 +362,7 @@ const App = () => {
               <>
                 {currentView === 'dashboard' && renderDashboard()}
                 {currentView === 'logs' && (
-                  <div className="animate-in fade-in slide-in-from-right-8 duration-300 h-[calc(100vh-180px)] bg-dark-800/30 backdrop-blur-md rounded-2xl border border-dark-700/50 shadow-xl overflow-hidden">
+                  <div className="animate-in fade-in slide-in-from-right-8 duration-300 h-[calc(100vh-180px)]">
                     <AlertPanel alerts={alerts} />
                   </div>
                 )}

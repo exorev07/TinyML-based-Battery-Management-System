@@ -11,7 +11,7 @@ interface AlertPanelProps {
 export const AlertPanel: React.FC<AlertPanelProps> = ({ alerts, isMini = false, onViewAll }) => {
   if (alerts.length === 0) {
     return (
-      <div className="card-hover bg-dark-800/20 border border-dark-700/50 rounded-2xl p-6 h-full flex flex-col items-center justify-center text-cyphgray font-doto">
+      <div className="card-hover bg-dark-800/30 backdrop-blur-md shadow-xl border border-dark-700/50 rounded-2xl p-6 h-full flex flex-col items-center justify-center text-cyphgray font-doto">
         <div className="w-full flex justify-center mb-6">
           <h2 className="text-lg text-header-purple font-black uppercase tracking-[0.4em] border-b border-dark-700/30 pb-4 px-10">
             SYSTEM ALERTS
@@ -29,7 +29,7 @@ export const AlertPanel: React.FC<AlertPanelProps> = ({ alerts, isMini = false, 
   const displayAlerts = isMini ? alerts.slice(0, 1) : alerts;
 
   return (
-    <div className={`group card-hover bg-dark-800/20 border border-dark-700/50 rounded-2xl p-6 h-full overflow-hidden flex flex-col font-doto relative`}>
+    <div className={`group card-hover bg-dark-800/30 backdrop-blur-md shadow-xl border border-dark-700/50 rounded-2xl p-6 h-full overflow-hidden flex flex-col font-doto relative`}>
       
       {/* Primary Centered Heading */}
       <div className="w-full flex justify-center mb-6 relative">

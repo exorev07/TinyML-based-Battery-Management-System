@@ -68,9 +68,9 @@ const generateMockData = (prevData: BMSData | null): BMSData => {
     relayStatus: voltage > 440 || temp > 70 ? 'DISCONNECTED' : 'CONNECTED',
     isCharging: isCharging,
     
-    capacityFadeDetected: false,
+    capacityFadeDetected: Math.random() > 0.98,
     thermalRunawayRisk: temp > 65,
-    voltageAnomaly: voltage > 445,
+    voltageAnomaly: voltage > 445 || Math.random() > 0.98,
     batterySwellDetected: swellRandom > 0.995,
     waterLeakageDetected: leakRandom > 0.995,
     
@@ -114,6 +114,12 @@ export const useBMSData = () => {
         }
         if (newData.batterySwellDetected) {
           newAlerts.push({ id: `swell-${timestamp}`, code: 'PRS-01', message: 'CRITICAL: Cell Swelling Detected!', severity: AlertSeverity.CRITICAL, timestamp });
+        }
+        if (newData.voltageAnomaly) {
+          newAlerts.push({ id: `volt-${timestamp}`, code: 'VOL-01', message: 'CRITICAL: Abnormal Voltage Detected!', severity: AlertSeverity.CRITICAL, timestamp });
+        }
+        if (newData.capacityFadeDetected) {
+          newAlerts.push({ id: `cap-${timestamp}`, code: 'CAP-01', message: 'Warning: Abnormal Capacity Fade', severity: AlertSeverity.WARNING, timestamp });
         }
         if (newData.thermalRunawayRisk) {
           newAlerts.push({ id: `therm-${timestamp}`, code: 'THM-01', message: 'Warning: Thermal Limit Approached', severity: AlertSeverity.WARNING, timestamp });
