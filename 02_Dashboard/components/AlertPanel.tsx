@@ -67,7 +67,7 @@ export const AlertPanel: React.FC<AlertPanelProps> = ({ alerts, isMini = false, 
   };
 
   return (
-    <div className={`group ${isMini ? 'card-hover bg-dark-800/30 shadow-xl border-dark-700/50 rounded-2xl' : 'bg-transparent border-transparent'} backdrop-blur-md border p-6 h-full overflow-hidden flex flex-col font-doto relative`}>
+    <div className={`group ${isMini ? 'card-hover bg-dark-800/30 shadow-xl border-dark-700/50 rounded-2xl overflow-hidden' : 'bg-transparent border-transparent'} backdrop-blur-md border p-6 h-full flex flex-col font-doto relative`}>
       
       {/* Primary Centered Heading */}
       <div className="w-full flex justify-center mb-6 relative">
@@ -94,9 +94,9 @@ export const AlertPanel: React.FC<AlertPanelProps> = ({ alerts, isMini = false, 
         )}
       </div>
 
-      <div className={`space-y-2 flex flex-col ${isMini ? 'flex-1 overflow-hidden px-2' : 'pr-4 overflow-y-auto custom-scrollbar flex-1 rounded-xl bg-dark-900/40 border border-dark-700/30 p-4'}`}>
+      <div className={`space-y-2 flex flex-col ${isMini ? 'flex-1 overflow-hidden px-2' : 'flex-1 overflow-y-auto custom-scrollbar rounded-xl bg-[#121519] border border-dark-700/30 p-4'}`}>
         {!isMini && alerts.length > 0 && (
-          <div className="grid grid-cols-12 gap-4 pb-2 border-b border-dark-700/50 text-[12px] text-header-purple font-black uppercase tracking-[0.2em] mb-4 px-2">
+          <div className="grid grid-cols-12 gap-4 pt-5 pb-3 border-b border-dark-700/50 text-[12px] text-header-purple font-black uppercase tracking-[0.2em] mb-2 px-2 sticky top-0 z-10 bg-[#121519] -mt-4">
             <div className="col-span-2">TIMESTAMP</div>
             <div className="col-span-3 text-center">SEVERITY</div>
             <div className="col-span-4 text-center">SYS CODE</div>
@@ -173,7 +173,7 @@ export const AlertPanel: React.FC<AlertPanelProps> = ({ alerts, isMini = false, 
       
       {!isMini && (
         <div className="flex items-center justify-between pt-4 mt-2 px-4 w-full shrink-0">
-          <span className="text-[10px] text-cyphgray font-black uppercase tracking-widest">
+          <span className="text-[12px] text-cyphgray font-black uppercase tracking-widest">
             Showing {(currentPage - 1) * itemsPerPage + 1} - {Math.min(currentPage * itemsPerPage, alerts.length)} of {alerts.length}
           </span>
           <div className="flex items-center gap-2">
@@ -185,7 +185,7 @@ export const AlertPanel: React.FC<AlertPanelProps> = ({ alerts, isMini = false, 
             >
               <ChevronLeft size={14} />
             </button>
-            <span className="text-[10px] text-amethyst-300 font-bold tracking-widest px-2">
+            <span className="text-[12px] text-amethyst-300 font-bold tracking-widest px-2">
               PAGE {currentPage} / {totalPages}
             </span>
             <button
