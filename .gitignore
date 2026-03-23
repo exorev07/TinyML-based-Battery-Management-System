@@ -39,6 +39,7 @@ wheels/
 *.mat
 BMW_i3_Dataset/
 Real-world electric vehicle data driving and charging/
+NASA_Cleaned_Dataset/
 
 # IDE
 .vscode/
