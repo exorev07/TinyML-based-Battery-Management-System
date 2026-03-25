@@ -1,4 +1,4 @@
-import { Italic } from 'lucide-react'
+import { ArrowUpRight } from 'lucide-react'
 import { useState, useEffect } from 'react'
 
 const phrases = [
@@ -69,6 +69,8 @@ function TypewriterLine() {
 }
 
 export function Hero() {
+  const [hoveredBtn, setHoveredBtn] = useState<string | null>(null)
+
   return (
     <section
       className="relative w-full overflow-hidden flex flex-col items-center"
@@ -114,7 +116,7 @@ export function Hero() {
       </div>
 
       {/* Dashboard preview */}
-      <div style={{ position: 'relative', zIndex: 10, width: '100%', maxWidth: '1200px', padding: '0 24px', marginLeft: 'auto', marginRight: 'auto' }}>
+      <div id="product" style={{ position: 'relative', zIndex: 10, width: '100%', maxWidth: '1200px', padding: '0 24px', marginLeft: 'auto', marginRight: 'auto', scrollMarginTop: '100px' }}>
         <div style={{ borderRadius: '12px', border: '1px solid rgba(121,71,189,0.3)', overflow: 'hidden', boxShadow: '0 20px 80px rgba(121,71,189,0.4), 0 8px 30px rgba(121,71,189,0.2)' }}>
           {/* Browser chrome */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', background: 'rgba(255,255,255,0.02)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
@@ -158,6 +160,31 @@ export function Hero() {
           CyphEV is an edge-native Battery Management System (BMS) built on the ESP32, running TinyML inference models entirely on-device, it requires no cloud dependency, and has no latency and privacy concerns. Raw sensor data from the battery pack is processed locally in real-time, streamed to a Firebase backend, and surfaced on this dashboard - giving fleet operators and owners complete visibility into the vehicle's battery conditions, every second.
         </p>
       </div>
+
+      {/* CTA Buttons */}
+      <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', marginTop: '48px' }}>
+        <a
+          href="#get-started"
+          onMouseEnter={() => setHoveredBtn('getstarted')}
+          onMouseLeave={() => setHoveredBtn(null)}
+          style={{ display: 'inline-flex', alignItems: 'center', fontFamily: "'DM Sans', sans-serif", fontSize: '14px', fontWeight: 600, color: '#08080a', background: '#ffffff', borderRadius: '8px', padding: '6px 18px', textDecoration: 'none', transition: 'box-shadow 0.2s, transform 0.2s', boxShadow: hoveredBtn === 'getstarted' ? '0 0 24px rgba(121,71,189,0.55)' : 'none', transform: hoveredBtn === 'getstarted' ? 'translateY(-2px)' : 'translateY(0)' }}
+        >
+          Get Started
+        </a>
+        <a
+          href="https://github.com/exorev07/TinyML-based-Battery-Management-System.git"
+          target="_blank"
+          rel="noopener noreferrer"
+          onMouseEnter={() => setHoveredBtn('github')}
+          onMouseLeave={() => setHoveredBtn(null)}
+          style={{ display: 'inline-flex', alignItems: 'center', fontFamily: "'DM Sans', sans-serif", fontSize: '14px', fontWeight: 600, color: '#9ca3af', background: 'rgba(255,255,255,0.07)', border: '2px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(8px)', borderRadius: '8px', padding: '6px 18px', textDecoration: 'none', transition: 'box-shadow 0.2s, transform 0.2s', boxShadow: hoveredBtn === 'github' ? '0 0 24px rgba(121,71,189,0.4)' : 'none', transform: hoveredBtn === 'github' ? 'translateY(-2px)' : 'translateY(0)' }}
+        >
+          GitHub <ArrowUpRight size={13} style={{ marginLeft: '4px' }} />
+        </a>
+      </div>
+
+      {/* Divider */}
+      <hr style={{ border: 'none', borderTop: '1px solid rgba(255,255,255,0.26)', width: '100%', maxWidth: '1152px', margin: '60px auto 0' }} />
     </section>
   )
 }

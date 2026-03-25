@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import {
   BatteryCharging,
   HeartPulse,
@@ -7,7 +7,6 @@ import {
   ShieldAlert,
   Droplets,
   Gauge,
-  ArrowUpRight,
 } from 'lucide-react'
 
 const features = [
@@ -21,48 +20,49 @@ const features = [
 ]
 
 export function Features() {
-  const [hoveredBtn, setHoveredBtn] = useState<string | null>(null)
   const [hoveredCard, setHoveredCard] = useState<string | null>(null)
+  const [headingText, setHeadingText] = useState('')
+  const [typingDone, setTypingDone] = useState(false)
+  const sectionRef = useRef<HTMLElement>(null)
+  const hasAnimated = useRef(false)
+
+  useEffect(() => {
+    const full = 'Features'
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !hasAnimated.current) {
+          hasAnimated.current = true
+          let i = 0
+          const tick = () => {
+            i++
+            setHeadingText(full.slice(0, i))
+            if (i < full.length) setTimeout(tick, 80)
+            else setTypingDone(true)
+          }
+          setTimeout(tick, 80)
+        }
+      },
+      { threshold: 0.3 }
+    )
+    if (sectionRef.current) observer.observe(sectionRef.current)
+    return () => observer.disconnect()
+  }, [])
 
   return (
     <section
       id="features"
-      style={{ padding: '0px 24px 96px', marginTop: '-48px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+      ref={sectionRef}
+      style={{ padding: '24px 24px 96px', scrollMarginTop: '80px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
     >
-      {/* CTA Buttons */}
-      <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', marginBottom: '48px', width: '100%' }}>
-        <a
-          href="#get-started"
-          onMouseEnter={() => setHoveredBtn('getstarted')}
-          onMouseLeave={() => setHoveredBtn(null)}
-          style={{ display: 'inline-flex', alignItems: 'center', fontFamily: "'DM Sans', sans-serif", fontSize: '14px', fontWeight: 600, color: '#08080a', background: '#ffffff', borderRadius: '8px', padding: '6px 18px', textDecoration: 'none', transition: 'box-shadow 0.2s, transform 0.2s', boxShadow: hoveredBtn === 'getstarted' ? '0 0 24px rgba(121,71,189,0.55)' : 'none', transform: hoveredBtn === 'getstarted' ? 'translateY(-2px)' : 'translateY(0)' }}
-        >
-          Get Started
-        </a>
-        <a
-          href="https://github.com/exorev07/TinyML-based-Battery-Management-System.git"
-          target="_blank"
-          rel="noopener noreferrer"
-          onMouseEnter={() => setHoveredBtn('github')}
-          onMouseLeave={() => setHoveredBtn(null)}
-          style={{ display: 'inline-flex', alignItems: 'center', fontFamily: "'DM Sans', sans-serif", fontSize: '14px', fontWeight: 600, color: '#9ca3af', background: 'rgba(255,255,255,0.07)', border: '2px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(8px)', borderRadius: '8px', padding: '6px 18px', textDecoration: 'none', transition: 'box-shadow 0.2s, transform 0.2s', boxShadow: hoveredBtn === 'github' ? '0 0 24px rgba(121,71,189,0.4)' : 'none', transform: hoveredBtn === 'github' ? 'translateY(-2px)' : 'translateY(0)' }}
-        >
-          GitHub <ArrowUpRight size={13} style={{ marginLeft: '4px' }} />
-        </a>
-      </div>
-
-      {/* Divider */}
-      <hr style={{ border: 'none', borderTop: '1px solid rgba(255,255,255,0.26)', width: '100%', maxWidth: '1152px', marginBottom: '100px' }} />
-
       <div style={{ width: '100%', maxWidth: '1080px', marginLeft: 'auto', marginRight: 'auto' }}>
 
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: '56px' }}>
           <style>{`@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }`}</style>
           <p style={{ fontFamily: "'DM Serif Display', serif", fontSize: 'clamp(2.5rem, 3vw, 4rem)', fontWeight: 600, color: '#b18ddd', letterSpacing: '0.05em', marginBottom: '12px' }}>
-            Features<span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 800, fontSize: '0.75em', color: '#6829c1', marginLeft: '5px', animation: 'blink 1.1s step-start infinite' }}>{'>'}</span>
+            {headingText}<span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 800, fontSize: '0.75em', color: '#6829c1', marginLeft: '5px', animation: typingDone ? 'blink 1.1s step-start infinite' : 'none', opacity: headingText.length > 0 ? 1 : 0 }}>{'>'}</span>
           </p>
-          <h2 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '16px', fontWeight: 300, color: '#9ca3af', textAlign: 'justify', maxWidth: '1000px', marginLeft: 'auto', marginRight: 'auto' }}>
+          <h2 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '16px', fontWeight: 300, color: '#9ca3af', textAlign: 'justify', maxWidth: '1000px', marginLeft: 'auto', marginRight: 'auto', lineHeight: 1.4 }}>
             Traditional BMS systems handle the basics i.e. voltage cutoffs, thermal trips, and simple math-based SoC estimation. But, CyphEV goes further with on-device ML models that predict SoH & Remaining Useful Life, flag capacity fade before it becomes critical, and detect anomalies in voltage and current draw, water leakage in battery compartment, and battery swelling in real-time. Environmental parameters and driving patterns are factored into every prediction - things most traditional BMS systems never account for.
           </h2>
         </div>
@@ -87,9 +87,9 @@ export function Features() {
                 cursor: 'default',
               }}
             >
-              <f.icon size={18} style={{ color: f.color, marginBottom: '12px' }} />
-              <h3 style={{ fontSize: '13px', fontWeight: 600, color: '#ffffff', marginBottom: '6px' }}>{f.title}</h3>
-              <p style={{ fontSize: '12px', color: '#6b7280', lineHeight: 1.6 }}>{f.desc}</p>
+              <f.icon size={24} style={{ color: '#9ca3af', marginBottom: '12px', display: 'block', margin: '0 auto 12px' }} />
+              <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '18px', fontWeight: 600, color: '#ffffff', marginBottom: '6px', textAlign: 'center' }}>{f.title}</h3>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '12px', color: '#6b7280', lineHeight: 1.6, textAlign: 'center' }}>{f.desc}</p>
             </div>
           ))}
         </div>
