@@ -60,7 +60,7 @@ export function Features() {
       id="features"
       style={{ padding: '0px 24px 96px', scrollMarginTop: '75px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
     >
-      <div style={{ width: '100%', maxWidth: '1080px', marginLeft: 'auto', marginRight: 'auto' }}>
+      <div style={{ width: '100%', maxWidth: '1152px', marginLeft: 'auto', marginRight: 'auto' }}>
 
         {/* Header */}
         <div ref={sectionRef} style={{ textAlign: 'center', marginBottom: '56px' }}>
@@ -73,31 +73,47 @@ export function Features() {
           </h2>
         </div>
 
-        {/* Grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '16px' }}>
-          {features.map((f) => (
-            <div
-              key={f.title}
-              onMouseEnter={() => setHoveredCard(f.title)}
-              onMouseLeave={() => setHoveredCard(null)}
-              style={{
-                borderRadius: '12px',
-                border: '1px solid rgba(141, 110, 179, 0.58)',
-                background: 'rgba(255,255,255,0.05)',
-                backdropFilter: 'blur(20px)',
-                WebkitBackdropFilter: 'blur(20px)',
-                boxShadow: hoveredCard === f.title ? '0 0 28px rgba(121,71,189,0.35), inset 0 1px 0 rgba(255,255,255,0.1)' : 'inset 0 1px 0 rgba(255,255,255,0.07)',
-                padding: '20px',
-                transition: 'border-color 0.2s, background 0.2s, box-shadow 0.2s, transform 0.2s',
-                transform: hoveredCard === f.title ? 'translateY(-3px)' : 'translateY(0)',
-                cursor: 'default',
-              }}
-            >
-              <f.icon size={24} style={{ color: '#9ca3af', marginBottom: '12px', display: 'block', margin: '0 auto 12px' }} />
-              <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '18px', fontWeight: 600, color: '#ffffff', marginBottom: '6px', textAlign: 'center' }}>{f.title}</h3>
-              <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '12px', color: '#6b7280', lineHeight: 1.6, textAlign: 'center' }}>{f.desc}</p>
-            </div>
-          ))}
+        {/* Horizontal row */}
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '12px', padding: '40px 0' }}>
+          {features.map((f) => {
+            const isHovered = hoveredCard === f.title
+            return (
+              <div
+                key={f.title}
+                onMouseEnter={() => setHoveredCard(f.title)}
+                onMouseLeave={() => setHoveredCard(null)}
+                style={{
+                  flex: 1,
+                  maxWidth: '160px',
+                  height: '150px',
+                  display: 'flex',
+                  flexDirection: 'column' as const,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  borderRadius: '12px',
+                  border: '1px solid rgba(141, 110, 179, 0.58)',
+                  background: 'rgba(255,255,255,0.05)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
+                  boxShadow: isHovered
+                    ? '0 0 32px rgba(121,71,189,0.45), inset 0 1px 0 rgba(255,255,255,0.1)'
+                    : 'inset 0 1px 0 rgba(255,255,255,0.07)',
+                  padding: '16px 12px',
+                  transition: 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.3s ease',
+                  transform: isHovered ? 'scale(1.25)' : 'scale(1)',
+                  transformOrigin: 'center center',
+                  zIndex: isHovered ? 10 : 1,
+                  cursor: 'default',
+                  position: 'relative' as const,
+                  overflow: 'hidden',
+                }}
+              >
+                <f.icon size={20} style={{ color: '#9ca3af', display: 'block', margin: '0 auto 8px' }} />
+                <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '13px', fontWeight: 600, color: '#ffffff', marginBottom: '6px', textAlign: 'center', lineHeight: 1.3 }}>{f.title}</h3>
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '9px', color: '#6b7280', lineHeight: 1.5, textAlign: 'center', margin: 0 }}>{f.desc}</p>
+              </div>
+            )
+          })}
         </div>
 
       </div>
