@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Menu, X } from 'lucide-react'
 
 const navLinks = [
-  { label: 'Product Overview', href: '#product' },
+  { label: 'Product Preview', href: '#product' },
   { label: 'Features', href: '#features' },
   { label: 'Tech Stack', href: '#tech' },
   { label: 'About', href: '#about' },
@@ -68,8 +68,7 @@ export function Navbar() {
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
           className="md:hidden p-2"
-          style={{ marginLeft: 'auto' }}
-          style={{ color: '#9ca3af' }}
+          style={{ marginLeft: 'auto', color: '#9ca3af' }}
         >
           {mobileOpen ? <X size={20} /> : <Menu size={20} />}
         </button>

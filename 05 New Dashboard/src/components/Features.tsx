@@ -52,7 +52,7 @@ export function Features() {
     <section
       id="features"
       ref={sectionRef}
-      style={{ padding: '24px 24px 96px', scrollMarginTop: '80px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+      style={{ padding: '0px 24px 96px', scrollMarginTop: '75px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
     >
       <div style={{ width: '100%', maxWidth: '1080px', marginLeft: 'auto', marginRight: 'auto' }}>
 
@@ -76,7 +76,7 @@ export function Features() {
               onMouseLeave={() => setHoveredCard(null)}
               style={{
                 borderRadius: '12px',
-                border: '1px solid rgba(255,255,255,0.1)',
+                border: '1px solid rgba(141, 110, 179, 0.58)',
                 background: 'rgba(255,255,255,0.05)',
                 backdropFilter: 'blur(20px)',
                 WebkitBackdropFilter: 'blur(20px)',
@@ -95,6 +95,9 @@ export function Features() {
         </div>
 
       </div>
+
+      {/* Divider */}
+      <hr style={{ border: 'none', borderTop: '1px solid rgba(255,255,255,0.26)', width: '100%', maxWidth: '1152px', margin: '60px auto 0' }} />
     </section>
   )
 }
