@@ -2,7 +2,7 @@ import { Zap } from 'lucide-react'
 
 export function Footer() {
   return (
-    <footer id="contact" className="border-t border-white/[0.06] py-10 px-6 flex justify-center">
+    <footer className="border-t border-white/[0.06] py-10 px-6 flex justify-center">
       <div className="w-full max-w-5xl flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-2">
           <Zap size={14} className="text-amethyst-400" />
