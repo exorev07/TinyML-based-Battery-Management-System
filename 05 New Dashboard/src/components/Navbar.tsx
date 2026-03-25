@@ -11,6 +11,8 @@ const navLinks = [
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [hoveredLink, setHoveredLink] = useState<string | null>(null)
+  const [hoveredBtn, setHoveredBtn] = useState<string | null>(null)
 
   return (
     <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50, background: 'rgba(8,8,10,0.6)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}>
@@ -29,7 +31,9 @@ export function Navbar() {
             <div key={link.label} style={{ display: 'flex', alignItems: 'center' }}>
               <a
                 href={link.href}
-                style={{ color: '#9ca3af', fontSize: '14px', padding: '8px 10px', textDecoration: 'none' }}
+                onMouseEnter={() => setHoveredLink(link.label)}
+                onMouseLeave={() => setHoveredLink(null)}
+                style={{ color: hoveredLink === link.label ? '#b18ddd' : '#9ca3af', fontSize: '14px', padding: '8px 10px', textDecoration: 'none', transition: 'color 0.2s' }}
               >
                 {link.label}
               </a>
@@ -44,15 +48,17 @@ export function Navbar() {
         <div className="hidden md:flex items-center gap-3" style={{ marginLeft: 'auto' }}>
           <a
             href="#demo"
-            className="text-sm transition-colors"
-            style={{ color: '#b18ddd', border: '1px solid #7947BD', borderRadius: '8px', padding: '6px 16px' }}
+            onMouseEnter={() => setHoveredBtn('demo')}
+            onMouseLeave={() => setHoveredBtn(null)}
+            style={{ color: '#b18ddd', border: '1px solid #7947BD', borderRadius: '8px', padding: '6px 16px', fontSize: '14px', textDecoration: 'none', transition: 'box-shadow 0.2s, transform 0.2s', boxShadow: hoveredBtn === 'demo' ? '0 0 24px rgba(121,71,189,0.65)' : 'none', transform: hoveredBtn === 'demo' ? 'translateY(-2px)' : 'translateY(0)' }}
           >
             Demo
           </a>
           <a
             href="#get-started"
-            className="text-sm font-semibold transition-colors"
-            style={{ background: '#ffffff', color: '#08080a', borderRadius: '8px', padding: '6px 18px' }}
+            onMouseEnter={() => setHoveredBtn('getstarted')}
+            onMouseLeave={() => setHoveredBtn(null)}
+            style={{ background: '#ffffff', color: '#08080a', borderRadius: '8px', padding: '6px 18px', fontSize: '14px', fontWeight: 600, textDecoration: 'none', transition: 'box-shadow 0.2s, transform 0.2s', boxShadow: hoveredBtn === 'getstarted' ? '0 0 24px rgba(121,71,189,0.55)' : 'none', transform: hoveredBtn === 'getstarted' ? 'translateY(-2px)' : 'translateY(0)' }}
           >
             Get Started
           </a>
