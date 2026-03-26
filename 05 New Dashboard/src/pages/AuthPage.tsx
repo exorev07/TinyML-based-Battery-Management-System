@@ -70,7 +70,7 @@ export function AuthPage() {
           alt="Audi RS5"
           style={{
             width: '100%',
-            maxWidth: '700px',
+            maxWidth: '800px',
             objectFit: 'contain',
             transition: 'opacity 0.8s ease, transform 0.8s ease',
             opacity: carLoaded ? 1 : 0,
@@ -100,9 +100,9 @@ export function AuthPage() {
 
         {/* Heading */}
         <h1 style={{ fontFamily: "'DM Serif Display', serif", fontSize: '28px', fontWeight: 600, color: '#ffffff', textAlign: 'center', marginBottom: '4px', letterSpacing: '0.03em' }}>
-          {mode === 'login' ? 'Login' : 'Create account'}
+          {mode === 'login' ? 'Welcome!' : 'Create Account'}
         </h1>
-        <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '14px', color: '#6b7280', textAlign: 'center', marginBottom: '32px' }}>
+        <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '14px', color: '#b18ddd', textAlign: 'center', marginBottom: '32px' }}>
           {mode === 'login' ? 'Sign in to your dashboard' : 'Get started with CyphEV'}
         </p>
 
@@ -116,12 +116,12 @@ export function AuthPage() {
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="Your name"
+                placeholder="Enter Your Name"
                 style={{
                   width: '100%',
                   fontFamily: "'DM Sans', sans-serif",
-                  fontSize: '14px',
-                  color: '#ffffff',
+                  fontSize: '12px',
+                  color: '#ffffffa9',
                   background: 'rgba(255,255,255,0.05)',
                   border: '1px solid rgba(255,255,255,0.1)',
                   borderRadius: '10px',
@@ -142,12 +142,12 @@ export function AuthPage() {
               type="email"
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              placeholder="you@example.com"
+              placeholder="Enter Account Email Address"
               style={{
                 width: '100%',
                 fontFamily: "'DM Sans', sans-serif",
-                fontSize: '14px',
-                color: '#ffffff',
+                fontSize: '12px',
+                color: '#ffffffa9',
                 background: 'rgba(255,255,255,0.05)',
                 border: '1px solid rgba(255,255,255,0.1)',
                 borderRadius: '10px',
@@ -167,12 +167,12 @@ export function AuthPage() {
               type="password"
               value={formData.password}
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              placeholder="••••••••"
+              placeholder="Enter Your Password"
               style={{
                 width: '100%',
                 fontFamily: "'DM Sans', sans-serif",
-                fontSize: '14px',
-                color: '#ffffff',
+                fontSize: '12px',
+                color: '#ffffffa9',
                 background: 'rgba(255,255,255,0.05)',
                 border: '1px solid rgba(255,255,255,0.1)',
                 borderRadius: '10px',
@@ -195,14 +195,14 @@ export function AuthPage() {
               fontFamily: "'DM Sans', sans-serif",
               fontSize: '14px',
               fontWeight: 600,
-              color: '#08080a',
-              background: '#ffffff',
+              color: hoveredBtn === 'submit' ? '#ffffff' : '#08080a',
+              background: hoveredBtn === 'submit' ? '#b18ddd' : '#ffffff',
               border: 'none',
               borderRadius: '15px',
               padding: '10px 18px',
               cursor: 'pointer',
               marginTop: '8px',
-              transition: 'box-shadow 0.2s, transform 0.2s',
+              transition: 'background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.2s',
               boxShadow: hoveredBtn === 'submit' ? '0 0 24px rgba(121,71,189,0.65)' : 'none',
               transform: hoveredBtn === 'submit' ? 'translateY(-2px)' : 'translateY(0)',
             }}
@@ -239,7 +239,7 @@ export function AuthPage() {
           onMouseLeave={() => setHoveredBtn(null)}
           style={{
             fontFamily: "'DM Sans', sans-serif",
-            fontSize: '13px',
+            fontSize: '16px',
             color: '#6b7280',
             background: 'none',
             border: 'none',
