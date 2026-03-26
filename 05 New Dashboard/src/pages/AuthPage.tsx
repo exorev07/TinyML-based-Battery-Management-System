@@ -57,6 +57,12 @@ export function AuthPage() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setError(null)
+    if (mode === 'login' && !formData.email) return setError('Please enter your email.')
+    if (mode === 'login' && !formData.password) return setError('Please enter your password.')
+    if (mode === 'register' && !formData.email) return setError('Please enter your email.')
+    if (mode === 'register' && !formData.password) return setError('Please enter a password.')
+    if (mode === 'forgot' && !formData.email) return setError('Please enter your email.')
+    if (mode === 'reset' && !newPassword) return setError('Please enter a new password.')
     setLoading(true)
     try {
       if (mode === 'reset') {
@@ -185,7 +191,7 @@ export function AuthPage() {
         }}>
 
         {/* Heading */}
-        <h1 style={{ fontFamily: "'DM Serif Display', serif", fontSize: '28px', fontWeight: 600, color: '#ffffff', textAlign: 'center', marginBottom: '4px', letterSpacing: '0.03em' }}>
+        <h1 style={{ fontFamily: "'DM Serif Display', serif", fontSize: '28px', fontWeight: 600, color: '#ffffff', textAlign: 'center', marginBottom: '8px', letterSpacing: '0.03em' }}>
           {verifySent ? 'Check Your Email' : mode === 'login' ? 'Welcome!' : mode === 'register' ? 'Create Account' : 'Password Reset'}
         </h1>
         {!resetSent && !resetDone && !verifySent && (
@@ -196,11 +202,11 @@ export function AuthPage() {
 
         {(resetSent || resetDone || verifySent) ? (
           <div style={{ textAlign: 'center' }}>
-            <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '14px', color: '#9ca3af', marginBottom: '24px', lineHeight: 1.6 }}>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '14px', color: '#9ca3af', marginBottom: '24px', lineHeight: 1.4, textAlign: 'justify' }}>
               {resetSent
-                ? 'Reset email sent! Check your inbox and follow the link to set a new password.'
+                ? 'Reset email sent! Check your Inbox and follow the link to reset your password. If no email arrives, please check your Spam folder, and also make sure that this address was used before to register - if not, please sign up instead.'
                 : verifySent
-                ? 'Verification email sent! Click the link in your inbox to verify and complete your registration.'
+                ? 'Verification email sent! Click the link sent to you in your inbox to verify your email address and complete your registration.'
                 : 'Password updated! You can now sign in with your new password.'}
             </p>
             <button
