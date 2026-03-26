@@ -41,6 +41,7 @@ export function AuthPage() {
             transition: 'opacity 0.8s ease, transform 0.8s ease',
             opacity: carLoaded ? 1 : 0,
             transform: carLoaded ? 'translateX(0)' : 'translateX(-60px)',
+            mixBlendMode: 'lighten',
           }}
         />
       </div>
