@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, sendPasswordResetEmail, confirmPasswordReset, sendEmailVerification, applyActionCode, signOut } from 'firebase/auth'
 import { auth } from '../lib/firebase'
@@ -17,6 +17,7 @@ export function AuthPage() {
   const [countdown, setCountdown] = useState<number | null>(null)
   const [verifySent, setVerifySent] = useState(false)
   const [verifyDone, setVerifyDone] = useState(false)
+  const verifyAttempted = useRef(false)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -26,6 +27,8 @@ export function AuthPage() {
     if (urlMode === 'resetPassword' && code) {
       setOobCode(code); setMode('reset')
     } else if (urlMode === 'verifyEmail' && code) {
+      if (verifyAttempted.current) return
+      verifyAttempted.current = true
       applyActionCode(auth, code)
         .then(() => {
           const savedEmail = localStorage.getItem('cyphev_pending_email') ?? ''
@@ -71,6 +74,7 @@ export function AuthPage() {
         setVerifySent(true)
       } else {
         const cred = await signInWithEmailAndPassword(auth, formData.email, formData.password)
+        await cred.user.reload()
         if (!cred.user.emailVerified) {
           await signOut(auth)
           setError('Please verify your email before signing in. Check your inbox.')
@@ -306,7 +310,7 @@ export function AuthPage() {
                 </p>
               )}
 
-              {error && (
+              {error && !verifyDone && (
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '13px', color: '#f87171', textAlign: 'center', marginTop: '4px' }}>
                   {error}
                 </p>
