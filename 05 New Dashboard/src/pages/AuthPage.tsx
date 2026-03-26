@@ -39,30 +39,41 @@ export function AuthPage() {
           localStorage.removeItem('cyphev_verify_sent')
           setFormData(fd => ({ ...fd, email: savedEmail }))
           setVerifySent(false)
+          setCountdown(null)
           setVerifyDone(true)
           setMode('login')
         })
         .catch(() => {
           localStorage.removeItem('cyphev_verify_sent')
           setVerifySent(false)
+          setCountdown(null)
           setError('Verification link has expired or already been used.')
           setMode('login')
         })
     }
     if (localStorage.getItem('cyphev_verify_sent')) {
       setVerifySent(true)
+      setCountdown(10)
     }
   }, [])
 
   useEffect(() => {
     if (countdown === null) return
     if (countdown === 0) {
-      setMode('login'); setResetSent(false); setResetDone(false); setNewPassword(''); navigate('/auth', { replace: true })
+      if (verifySent || resetSent) {
+        window.close()
+        setTimeout(() => navigate('/', { replace: true }), 300)
+      } else {
+        const savedEmail = localStorage.getItem('cyphev_reset_email') ?? ''
+        localStorage.removeItem('cyphev_reset_email')
+        setFormData(fd => ({ ...fd, email: savedEmail }))
+        setMode('login'); setResetSent(false); setResetDone(false); setNewPassword(''); setCountdown(null); window.history.replaceState(null, '', '/auth')
+      }
       return
     }
     const t = setTimeout(() => setCountdown(countdown - 1), 1000)
     return () => clearTimeout(t)
-  }, [countdown, navigate])
+  }, [countdown, navigate, verifySent, resetSent])
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -80,7 +91,9 @@ export function AuthPage() {
         setResetDone(true); setCountdown(5)
       } else if (mode === 'forgot') {
         await sendPasswordResetEmail(auth, formData.email)
+        localStorage.setItem('cyphev_reset_email', formData.email)
         setResetSent(true)
+        setCountdown(10)
       } else if (mode === 'register') {
         const cred = await createUserWithEmailAndPassword(auth, formData.email, formData.password)
         if (formData.name) await updateProfile(cred.user, { displayName: formData.name })
@@ -89,6 +102,7 @@ export function AuthPage() {
         localStorage.setItem('cyphev_verify_sent', 'true')
         await signOut(auth)
         setVerifySent(true)
+        setCountdown(10)
       } else {
         const cred = await signInWithEmailAndPassword(auth, formData.email, formData.password)
         await cred.user.reload()
@@ -133,7 +147,7 @@ export function AuthPage() {
           to { opacity: 1; transform: translateX(0); }
         }
         input[type="password"] { height: 40px !important; box-sizing: border-box !important; }
-        input[type="password"]:not(:placeholder-shown) { font-size: 18px !important; letter-spacing: 3px !important; line-height: 1 !important; }
+        input[type="password"]:not(:placeholder-shown) { font-size: 18px !important; letter-spacing: 1px !important; line-height: 1 !important; }
       `}</style>
 
       {/* Logo + Tagline — fixed at top, won't shift with card height */}
@@ -204,7 +218,7 @@ export function AuthPage() {
 
         {/* Heading */}
         <h1 style={{ fontFamily: "'DM Serif Display', serif", fontSize: '28px', fontWeight: 600, color: '#ffffff', textAlign: 'center', marginBottom: (resetSent || resetDone || verifySent) ? '16px' : '0px', letterSpacing: '0.03em' }}>
-          {verifySent ? 'Check Your Email' : mode === 'login' ? 'Welcome!' : mode === 'register' ? 'Create Account' : 'Password Reset'}
+          {verifySent ? 'Check Your Email' : verifyDone ? 'Email Verified!' : mode === 'login' ? 'Welcome!' : mode === 'register' ? 'Create Account' : 'Password Reset'}
         </h1>
         {!resetSent && !resetDone && !verifySent && (
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '14px', color: '#b18ddd', textAlign: 'center', marginBottom: '32px' }}>
@@ -222,7 +236,7 @@ export function AuthPage() {
                 : 'Password updated! You can now sign in with your new password.'}
             </p>
             <button
-              onClick={() => { setMode('login'); setResetSent(false); setResetDone(false); setVerifySent(false); setNewPassword(''); setCountdown(null); setShowPassword(false); setShowNewPassword(false); localStorage.removeItem('cyphev_verify_sent'); navigate('/auth', { replace: true }) }}
+              onClick={() => { if (verifySent || resetSent) { localStorage.removeItem('cyphev_verify_sent'); localStorage.removeItem('cyphev_reset_email'); navigate('/', { replace: true }); return } const savedEmail = localStorage.getItem('cyphev_reset_email') ?? ''; localStorage.removeItem('cyphev_reset_email'); setFormData(fd => ({ ...fd, email: savedEmail })); setMode('login'); setResetDone(false); setNewPassword(''); setCountdown(null); setShowPassword(false); setShowNewPassword(false); window.history.replaceState(null, '', '/auth') }}
               onMouseEnter={() => setHoveredBtn('backtologin')}
               onMouseLeave={() => setHoveredBtn(null)}
               style={{
@@ -242,7 +256,7 @@ export function AuthPage() {
                 transform: hoveredBtn === 'backtologin' ? 'translateY(-2px)' : 'translateY(0)',
               }}
             >
-              {resetDone && countdown !== null ? `Back to Sign in (${countdown})` : 'Back to Sign in'}
+              {(verifySent || resetSent) && countdown !== null ? `Closing this window... (${countdown})` : resetDone && countdown !== null ? `Back to Sign in (${countdown})` : 'Back to Sign in'}
             </button>
           </div>
         ) : (
@@ -332,11 +346,6 @@ export function AuthPage() {
                 </>
               )}
 
-              {verifyDone && (
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '13px', color: '#9ca3af', textAlign: 'center', marginTop: '4px' }}>
-                  Email verified! Enter your password to sign in.
-                </p>
-              )}
 
               {error && (
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '13px', color: '#f87171', textAlign: 'center', marginTop: '4px' }}>
