@@ -1,4 +1,4 @@
-import { Gauge, Zap, Heart, Thermometer, Droplets, Wind, Activity, Bolt, RotateCw } from 'lucide-react'
+import { Gauge, Zap, Heart, Thermometer, Droplets, Wind, Activity, Bolt, RotateCw, Plug, PlugZap } from 'lucide-react'
 import { useBMS } from '../../components/dashboard/DashboardLayout'
 import { GlassCard } from '../../components/dashboard/GlassCard'
 import { RadialGauge } from '../../components/dashboard/RadialGauge'
@@ -31,19 +31,66 @@ export default function OverviewPage() {
         </p>
       </div>
 
-      {/* === Row 1: Vehicle Dynamics Gauges === */}
-      <GlassCard title="Vehicle Dynamics">
-        <div style={{ display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: '16px' }}>
-          <RadialGauge value={data.velocity} max={180} label="Speed" unit="km/h" color={chartColors.secondary} decimals={1} />
-          <RadialGauge value={data.throttle} max={100} label="Throttle" unit="%" color={chartColors.secondary} />
-          <RadialGauge value={data.motorTorque} max={500} label="Torque" unit="Nm" color={chartColors.secondary} decimals={1} />
-          <RadialGauge value={Math.abs(data.longitudinalAccel)} max={6} label="Accel" unit="m/s²" color={chartColors.secondary} decimals={2} />
-          <RadialGauge value={data.elevation} max={1000} label="Elevation" unit="m" color={chartColors.secondary} />
-        </div>
-      </GlassCard>
+      {/* === Row 1: Vehicle Dynamics + Relay Status === */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
+        <GlassCard title="Vehicle Dynamics" style={{ gridColumn: 'span 3' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: '16px' }}>
+            <RadialGauge value={data.velocity} max={180} label="Speed" unit="km/h" color={chartColors.secondary} decimals={1} />
+            <RadialGauge value={data.throttle} max={100} label="Throttle" unit="%" color={chartColors.secondary} />
+            <RadialGauge value={data.motorTorque} max={500} label="Torque" unit="Nm" color={chartColors.secondary} decimals={1} />
+            <RadialGauge value={Math.abs(data.longitudinalAccel)} max={6} label="Accel" unit="m/s²" color={chartColors.secondary} decimals={2} />
+            <RadialGauge value={data.elevation} max={1000} label="Elevation" unit="m" color={chartColors.secondary} />
+          </div>
+        </GlassCard>
+        {(() => {
+          const isConn = data.relayStatus === 'CONNECTED'
+          return (
+            <GlassCard style={{ display: 'flex', flexDirection: 'column' }}>
+              {/* Header row with title + status badge */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '-10px' }}>
+                <h3 style={{
+                  fontFamily: fonts.body, fontSize: '13px', fontWeight: 600,
+                  color: colors.text.muted, letterSpacing: '0.06em', textTransform: 'uppercase', margin: 0,
+                }}>
+                  Relay Status
+                </h3>
+                <div style={{
+                  display: 'flex', alignItems: 'center', gap: '6px',
+                  padding: '4px 10px', borderRadius: '20px',
+                  background: isConn ? 'rgba(52,211,153,0.08)' : 'rgba(248,113,113,0.08)',
+                  border: `1px solid ${isConn ? 'rgba(52,211,153,0.25)' : 'rgba(248,113,113,0.25)'}`,
+                }}>
+                  <span style={{
+                    fontFamily: fonts.mono, fontSize: '10px', fontWeight: 600,
+                    color: isConn ? colors.status.nominal : colors.status.critical,
+                  }}>
+                    {data.relayStatus}
+                  </span>
+                </div>
+              </div>
+              {/* Icon */}
+              <div style={{ width: '100%', flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{
+                  width: 110, height: 110, borderRadius: '50%',
+                  background: isConn ? 'rgba(121,71,189,0.08)' : 'rgba(255,255,255,0.03)',
+                  border: `2px solid ${isConn ? 'rgba(177,141,221,0.3)' : 'rgba(255,255,255,0.08)'}`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  transition: 'all 0.3s',
+                  boxShadow: isConn ? `0 0 20px rgba(121,71,189,0.2)` : 'none',
+                }}>
+                  {isConn
+                    ? <PlugZap size={40} color={colors.amethyst.light} style={{ transition: 'color 0.3s' }} />
+                    : <Plug size={40} color={colors.text.muted} style={{ transition: 'color 0.3s', opacity: 0.5 }} />
+                  }
+                </div>
+              </div>
+            </GlassCard>
+          )
+        })()}
+      </div>
 
       {/* === Row 2: Battery Stats === */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginTop: '0px' }}>
         <StatCard
           label="State of Health"
           value={data.soh.toFixed(1)}
@@ -93,7 +140,7 @@ export default function OverviewPage() {
           </div>
         </GlassCard>
         <GlassCard>
-          <MiniAlertPanel alerts={alerts} relayStatus={data.relayStatus} />
+          <MiniAlertPanel alerts={alerts} />
         </GlassCard>
       </div>
 
@@ -115,13 +162,18 @@ export default function OverviewPage() {
           <div style={{ width: '100%', height: '100%', minHeight: 220, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', paddingTop: '4px' }}>
             {/* Fan area */}
             <div style={{ width: '100%', height: 250, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <style>{`@keyframes spin { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }`}</style>
+              <style>{`
+                @keyframes spin { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }
+                @keyframes spinSlow { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }
+                .fan-svg { animation: spin 0.8s linear infinite; }
+                .fan-svg.idle { animation: spinSlow 8s linear infinite; }
+              `}</style>
               <svg
+                className={data.fanStatus ? 'fan-svg' : 'fan-svg idle'}
                 width="180" height="180" viewBox="-15 -15 150 150"
                 style={{
-                  animation: data.fanStatus ? 'spin 0.8s linear infinite' : 'none',
                   opacity: data.fanStatus ? 1 : 0.35,
-                  transition: 'opacity 0.3s',
+                  transition: 'opacity 1s ease',
                   filter: data.fanStatus ? `drop-shadow(0 0 12px ${colors.amethyst.mid})` : 'none',
                 }}
               >

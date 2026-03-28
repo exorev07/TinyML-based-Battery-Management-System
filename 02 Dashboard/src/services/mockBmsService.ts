@@ -7,11 +7,11 @@ const generateMockData = (prevData: BMSData | null): BMSData => {
 
   let voltage = prevData ? prevData.voltage + (Math.random() - 0.5) * 1.5 : 400
   let current = prevData ? prevData.current + (Math.random() - 0.5) * 4 : 15
-  let temp = prevData ? prevData.packTemp + (Math.random() - 0.5) * 0.8 : 32
+  let temp = prevData ? prevData.packTemp + (Math.random() - 0.45) * 1.2 : 35
   let ambientTemp = prevData ? prevData.ambientTemp + (Math.random() - 0.5) * 0.4 : 55
 
   voltage = Math.max(350, Math.min(450, voltage))
-  temp = Math.max(25, Math.min(40, temp))
+  temp = Math.max(25, Math.min(50, temp))
   ambientTemp = Math.max(50, Math.min(60, ambientTemp))
 
   const velocity = prevData ? Math.max(0, Math.min(180, prevData.velocity + (Math.random() - 0.45) * 8)) : 65
@@ -67,7 +67,7 @@ const generateMockData = (prevData: BMSData | null): BMSData => {
     coolantHeatercoreTemp: parseFloat(coolantHeatercoreTemp.toFixed(1)),
     coolantInletTemp: parseFloat(coolantInletTemp.toFixed(1)),
 
-    fanStatus: temp > 40,
+    fanStatus: temp > 34,
     relayStatus: voltage > 440 || temp > 70 ? 'DISCONNECTED' : 'CONNECTED',
     isCharging,
 

@@ -1,4 +1,4 @@
-import { AlertTriangle, ShieldCheck, ShieldOff, ArrowUpRight } from 'lucide-react'
+import { AlertTriangle, ArrowUpRight } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { fonts, colors } from '../../lib/styles'
 import { AlertSeverity } from '../../types/bms'
@@ -6,42 +6,21 @@ import type { BMSAlert } from '../../types/bms'
 
 interface MiniAlertPanelProps {
   alerts: BMSAlert[]
-  relayStatus: 'CONNECTED' | 'DISCONNECTED'
 }
 
-export function MiniAlertPanel({ alerts, relayStatus }: MiniAlertPanelProps) {
+export function MiniAlertPanel({ alerts }: MiniAlertPanelProps) {
   const navigate = useNavigate()
   const recent = alerts.slice(0, 3)
-  const isConnected = relayStatus === 'CONNECTED'
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', height: '100%' }}>
       {/* Header row */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <span style={{
-          fontFamily: fonts.body, fontSize: '13px', fontWeight: 600,
-          color: colors.text.muted, letterSpacing: '0.06em', textTransform: 'uppercase',
-        }}>
-          Recent Alerts
-        </span>
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: '6px',
-          padding: '4px 10px', borderRadius: '20px',
-          background: isConnected ? 'rgba(52,211,153,0.08)' : 'rgba(248,113,113,0.08)',
-          border: `1px solid ${isConnected ? 'rgba(52,211,153,0.25)' : 'rgba(248,113,113,0.25)'}`,
-        }}>
-          {isConnected
-            ? <ShieldCheck size={12} color={colors.status.nominal} />
-            : <ShieldOff size={12} color={colors.status.critical} />
-          }
-          <span style={{
-            fontFamily: fonts.body, fontSize: '11px', fontWeight: 600,
-            color: isConnected ? colors.status.nominal : colors.status.critical,
-          }}>
-            Relay {relayStatus}
-          </span>
-        </div>
-      </div>
+      <span style={{
+        fontFamily: fonts.body, fontSize: '13px', fontWeight: 600,
+        color: colors.text.muted, letterSpacing: '0.06em', textTransform: 'uppercase',
+      }}>
+        Recent Alerts
+      </span>
 
       {/* Alert list */}
       {recent.length === 0 ? (
