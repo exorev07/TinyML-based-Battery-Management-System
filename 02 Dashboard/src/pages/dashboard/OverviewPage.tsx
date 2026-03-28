@@ -106,15 +106,15 @@ export default function OverviewPage() {
             <SensorTile label="Humidity" value={data.humidity.toFixed(1)} unit="%" icon={Droplets} alert={data.waterLeakageDetected} />
             <SensorTile label="Pressure" value={data.pressure.toFixed(0)} unit="hPa" icon={Gauge} alert={data.batterySwellDetected} />
             <SensorTile label="Coolant Inlet" value={data.coolantInletTemp.toFixed(1)} unit="°C" icon={Thermometer} />
-            <SensorTile label="Heat Exchanger" value={data.heatExchangerTemp.toFixed(1)} unit="°C" icon={Wind} />
+            <SensorTile label="Heat Exch." value={data.heatExchangerTemp.toFixed(1)} unit="°C" icon={Wind} />
             <SensorTile label="Heatercore" value={data.coolantHeatercoreTemp.toFixed(1)} unit="°C" icon={Thermometer} />
             <SensorTile label="A/C Power" value={data.airconPower.toFixed(0)} unit="W" icon={RotateCw} />
           </div>
         </GlassCard>
         <GlassCard title="Fan Status">
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: '20px' }}>
-            {/* Spinning fan SVG */}
-            <div style={{ position: 'relative' }}>
+          <div style={{ width: '100%', height: '100%', minHeight: 220, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', paddingTop: '4px' }}>
+            {/* Fan area */}
+            <div style={{ width: '100%', height: 250, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <style>{`@keyframes spin { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }`}</style>
               <svg
                 width="80" height="80" viewBox="0 0 80 80"
@@ -124,7 +124,6 @@ export default function OverviewPage() {
                   transition: 'opacity 0.3s',
                 }}
               >
-                {/* Fan blades */}
                 {[0, 72, 144, 216, 288].map((angle) => (
                   <path
                     key={angle}
@@ -134,28 +133,24 @@ export default function OverviewPage() {
                     style={{ transition: 'fill 0.3s' }}
                   />
                 ))}
-                {/* Center hub */}
                 <circle cx="40" cy="40" r="6" fill={data.fanStatus ? colors.amethyst.mid : 'rgba(255,255,255,0.15)'} style={{ transition: 'fill 0.3s' }} />
               </svg>
             </div>
-            {/* Status label */}
-            <div style={{
-              display: 'flex', alignItems: 'center', gap: '8px',
-              padding: '6px 16px', borderRadius: '20px',
-              background: data.fanStatus ? 'rgba(52,211,153,0.08)' : 'rgba(255,255,255,0.04)',
-              border: `1px solid ${data.fanStatus ? 'rgba(52,211,153,0.25)' : 'rgba(255,255,255,0.08)'}`,
-            }}>
+            {/* Status label — aligned with temp legend */}
+            <div style={{ display: 'flex', justifyContent: 'center', marginTop: '8px' }}>
               <div style={{
-                width: 8, height: 8, borderRadius: '50%',
-                background: data.fanStatus ? colors.status.nominal : colors.text.muted,
-                boxShadow: data.fanStatus ? `0 0 8px ${colors.status.nominal}` : 'none',
-              }} />
-              <span style={{
-                fontFamily: fonts.mono, fontSize: '13px', fontWeight: 700,
-                color: data.fanStatus ? colors.status.nominal : colors.text.muted,
+                display: 'flex', alignItems: 'center', gap: '8px',
+                padding: '4px 14px', borderRadius: '20px',
+                background: data.fanStatus ? 'rgba(52,211,153,0.08)' : 'rgba(255,255,255,0.04)',
+                border: `1px solid ${data.fanStatus ? 'rgba(52,211,153,0.25)' : 'rgba(255,255,255,0.08)'}`,
               }}>
-                {data.fanStatus ? 'ACTIVE' : 'IDLE'}
-              </span>
+                <span style={{
+                  fontFamily: fonts.mono, fontSize: '11px', fontWeight: 700,
+                  color: data.fanStatus ? colors.status.nominal : colors.text.muted,
+                }}>
+                  {data.fanStatus ? 'ACTIVE' : 'IDLE'}
+                </span>
+              </div>
             </div>
           </div>
         </GlassCard>
