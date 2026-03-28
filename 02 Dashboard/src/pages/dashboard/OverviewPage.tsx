@@ -117,7 +117,7 @@ export default function OverviewPage() {
             <div style={{ width: '100%', height: 250, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <style>{`@keyframes spin { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }`}</style>
               <svg
-                width="180" height="180" viewBox="0 0 120 120"
+                width="180" height="180" viewBox="-15 -15 150 150"
                 style={{
                   animation: data.fanStatus ? 'spin 0.8s linear infinite' : 'none',
                   opacity: data.fanStatus ? 1 : 0.35,
@@ -126,12 +126,12 @@ export default function OverviewPage() {
                 }}
               >
                 {/* Outer ring */}
-                <circle cx="60" cy="60" r="56" fill="none" stroke={data.fanStatus ? 'rgba(177,141,221,0.25)' : 'rgba(255,255,255,0.08)'} strokeWidth="3" style={{ transition: 'stroke 0.3s' }} />
+                <circle cx="60" cy="60" r="70" fill="none" stroke={data.fanStatus ? 'rgba(177,141,221,0.25)' : 'rgba(255,255,255,0.08)'} strokeWidth="3" style={{ transition: 'stroke 0.3s' }} />
                 {/* 3 wide curved blades */}
                 {[0, 120, 240].map((angle) => (
                   <path
                     key={angle}
-                    d="M60 55 C50 44, 34 30, 20 18 C14 24, 14 38, 24 44 C34 50, 50 54, 55 60 Z"
+                    d="M60 50 C46 36, 28 22, 12 10 C2 22, 6 44, 20 52 C34 58, 50 58, 50 60 Z"
                     fill={data.fanStatus ? colors.amethyst.light : colors.text.muted}
                     stroke={data.fanStatus ? colors.amethyst.mid : 'rgba(255,255,255,0.15)'}
                     strokeWidth="1"
