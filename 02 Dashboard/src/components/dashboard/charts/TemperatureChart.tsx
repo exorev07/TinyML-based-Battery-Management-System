@@ -50,7 +50,8 @@ export function TemperatureChart() {
   }, [])
 
   return (
-    <div style={{ width: '100%', height: 220 }}>
+    <div style={{ width: '100%', height: '100%', minHeight: 220, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ width: '100%', height: 320 }}>
       <ResponsiveContainer>
         <AreaChart data={points} margin={{ top: 8, right: 28, bottom: 10, left: -16 }}>
           <defs>
@@ -71,6 +72,7 @@ export function TemperatureChart() {
             axisLine={{ stroke: chartColors.grid }} tickLine={false}
           />
           <YAxis
+            domain={[0, 100]}
             tick={{ fill: chartColors.axis, fontSize: 10, fontFamily: fonts.mono }}
             axisLine={false} tickLine={false}
             tickFormatter={(v) => `${v}°`}
@@ -88,6 +90,7 @@ export function TemperatureChart() {
           <Area type="monotone" dataKey="pack" stroke={chartColors.secondary} strokeWidth={2} fill="url(#packGrad)" dot={false} name="Pack" />
         </AreaChart>
       </ResponsiveContainer>
+      </div>
     </div>
   )
 }

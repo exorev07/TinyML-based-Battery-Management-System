@@ -92,14 +92,13 @@ export default function OverviewPage() {
             {data.remainingRangeKm.toFixed(0)} km &nbsp;·&nbsp; ~{data.remainingTimeMinutes} min
           </div>
         </GlassCard>
-        <GlassCard title="Temperature">
-          <TemperatureChart />
+        <GlassCard>
+          <MiniAlertPanel alerts={alerts} relayStatus={data.relayStatus} />
         </GlassCard>
       </div>
 
-      {/* === Row 4: Sensors + Alerts === */}
+      {/* === Row 4: Sensors + Temperature === */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-        {/* Sensor Grid */}
         <GlassCard title="Sensor Readings">
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
             <SensorTile label="Voltage" value={data.voltage.toFixed(1)} unit="V" icon={Bolt} alert={data.voltageAnomaly} />
@@ -112,10 +111,8 @@ export default function OverviewPage() {
             <SensorTile label="A/C Power" value={data.airconPower.toFixed(0)} unit="W" icon={RotateCw} />
           </div>
         </GlassCard>
-
-        {/* Alerts & Relay */}
-        <GlassCard>
-          <MiniAlertPanel alerts={alerts} relayStatus={data.relayStatus} />
+        <GlassCard title="Temperature">
+          <TemperatureChart />
         </GlassCard>
       </div>
     </div>
