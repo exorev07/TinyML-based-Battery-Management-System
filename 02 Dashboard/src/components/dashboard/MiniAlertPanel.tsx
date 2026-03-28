@@ -56,24 +56,22 @@ export function MiniAlertPanel({ alerts, relayStatus }: MiniAlertPanelProps) {
             const alertColor = isCritical ? colors.status.critical : colors.status.warning
             return (
               <div key={alert.id} style={{
-                display: 'flex', alignItems: 'flex-start', gap: '12px',
+                display: 'flex', flexDirection: 'column', gap: '2px',
                 padding: '10px 0',
                 borderBottom: i < recent.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none',
               }}>
-                <AlertTriangle size={13} color={alertColor} style={{ marginTop: '2px', flexShrink: 0 }} />
-                <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ fontFamily: fonts.mono, fontSize: '12px', fontWeight: 600, color: alertColor, flexShrink: 0 }}>
-                      {alert.code}
-                    </span>
-                    <span style={{ fontFamily: fonts.body, fontSize: '12px', color: colors.text.secondary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {alert.message}
-                    </span>
-                  </div>
-                  <span style={{ fontFamily: fonts.mono, fontSize: '10px', color: colors.text.muted }}>
-                    {new Date(alert.timestamp).toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <AlertTriangle size={13} color={alertColor} style={{ flexShrink: 0 }} />
+                  <span style={{ fontFamily: fonts.mono, fontSize: '12px', fontWeight: 600, color: alertColor, flexShrink: 0 }}>
+                    {alert.code}
+                  </span>
+                  <span style={{ fontFamily: fonts.body, fontSize: '12px', color: colors.text.secondary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginLeft: 'auto', textAlign: 'right' }}>
+                    {alert.message}
                   </span>
                 </div>
+                <span style={{ fontFamily: fonts.mono, fontSize: '10px', color: colors.text.muted, textAlign: 'right' }}>
+                  {new Date(alert.timestamp).toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                </span>
               </div>
             )
           })}
