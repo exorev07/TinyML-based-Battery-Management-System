@@ -97,8 +97,8 @@ export default function OverviewPage() {
         </GlassCard>
       </div>
 
-      {/* === Row 4: Sensors + Temperature === */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+      {/* === Row 4: Sensors + Fan + Temperature === */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 2fr', gap: '16px' }}>
         <GlassCard title="Sensor Readings">
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
             <SensorTile label="Voltage" value={data.voltage.toFixed(1)} unit="V" icon={Bolt} alert={data.voltageAnomaly} />
@@ -109,6 +109,54 @@ export default function OverviewPage() {
             <SensorTile label="Heat Exchanger" value={data.heatExchangerTemp.toFixed(1)} unit="°C" icon={Wind} />
             <SensorTile label="Heatercore" value={data.coolantHeatercoreTemp.toFixed(1)} unit="°C" icon={Thermometer} />
             <SensorTile label="A/C Power" value={data.airconPower.toFixed(0)} unit="W" icon={RotateCw} />
+          </div>
+        </GlassCard>
+        <GlassCard title="Fan Status">
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: '20px' }}>
+            {/* Spinning fan SVG */}
+            <div style={{ position: 'relative' }}>
+              <style>{`@keyframes spin { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }`}</style>
+              <svg
+                width="80" height="80" viewBox="0 0 80 80"
+                style={{
+                  animation: data.fanStatus ? 'spin 0.8s linear infinite' : 'none',
+                  opacity: data.fanStatus ? 1 : 0.3,
+                  transition: 'opacity 0.3s',
+                }}
+              >
+                {/* Fan blades */}
+                {[0, 72, 144, 216, 288].map((angle) => (
+                  <path
+                    key={angle}
+                    d="M40 40 C40 28, 48 16, 40 8 C32 16, 40 28, 40 40"
+                    fill={data.fanStatus ? colors.amethyst.light : colors.text.muted}
+                    transform={`rotate(${angle} 40 40)`}
+                    style={{ transition: 'fill 0.3s' }}
+                  />
+                ))}
+                {/* Center hub */}
+                <circle cx="40" cy="40" r="6" fill={data.fanStatus ? colors.amethyst.mid : 'rgba(255,255,255,0.15)'} style={{ transition: 'fill 0.3s' }} />
+              </svg>
+            </div>
+            {/* Status label */}
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: '8px',
+              padding: '6px 16px', borderRadius: '20px',
+              background: data.fanStatus ? 'rgba(52,211,153,0.08)' : 'rgba(255,255,255,0.04)',
+              border: `1px solid ${data.fanStatus ? 'rgba(52,211,153,0.25)' : 'rgba(255,255,255,0.08)'}`,
+            }}>
+              <div style={{
+                width: 8, height: 8, borderRadius: '50%',
+                background: data.fanStatus ? colors.status.nominal : colors.text.muted,
+                boxShadow: data.fanStatus ? `0 0 8px ${colors.status.nominal}` : 'none',
+              }} />
+              <span style={{
+                fontFamily: fonts.mono, fontSize: '13px', fontWeight: 700,
+                color: data.fanStatus ? colors.status.nominal : colors.text.muted,
+              }}>
+                {data.fanStatus ? 'ACTIVE' : 'IDLE'}
+              </span>
+            </div>
           </div>
         </GlassCard>
         <GlassCard title="Battery & Ambient Temp">
