@@ -83,7 +83,7 @@ export function Sidebar({ status }: SidebarProps) {
         <StatusIndicator status={status} />
         {!collapsed && (
           <span style={{ fontFamily: fonts.body, fontSize: '12px', color: colors.text.muted, whiteSpace: 'nowrap' }}>
-            {status === 'NOMINAL' ? 'System Nominal' : status === 'WARNING' ? 'Warning' : 'Critical Alert'}
+            {status === 'NOMINAL' ? 'System Nominal' : status === 'WARNING' ? 'Warning' : status === 'SEVERE' ? 'Severe Alert' : 'Critical Alert'}
           </span>
         )}
       </div>

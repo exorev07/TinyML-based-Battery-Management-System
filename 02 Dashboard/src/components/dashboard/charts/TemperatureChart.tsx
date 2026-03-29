@@ -92,17 +92,11 @@ export function TemperatureChart() {
           </AreaChart>
         </ResponsiveContainer>
       </div>
-      {/* Legend */}
-      <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginTop: '8px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <div style={{ width: 10, height: 10, borderRadius: 2, background: colors.amethyst.mid }} />
-          <span style={{ fontFamily: fonts.mono, fontSize: '11px', color: colors.text.muted }}>Ambient</span>
+      {data && (
+        <div style={{ textAlign: 'center', fontFamily: fonts.mono, fontSize: '12px', color: colors.text.primary, marginTop: '8px' }}>
+          {data.ambientTemp.toFixed(1)}°C ambient &nbsp;·&nbsp; {data.packTemp.toFixed(1)}°C pack
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <div style={{ width: 10, height: 10, borderRadius: 2, background: chartColors.secondary }} />
-          <span style={{ fontFamily: fonts.mono, fontSize: '11px', color: colors.text.muted }}>Pack</span>
-        </div>
-      </div>
+      )}
     </div>
   )
 }

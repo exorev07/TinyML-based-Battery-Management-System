@@ -5,7 +5,7 @@ import { GlassCard } from '../../components/dashboard/GlassCard'
 import { fonts, colors } from '../../lib/styles'
 import { AlertSeverity } from '../../types/bms'
 
-type SeverityFilter = 'ALL' | 'CRITICAL' | 'ATTENTION_REQUIRED'
+type SeverityFilter = 'ALL' | 'CRITICAL' | 'SEVERE' | 'ATTENTION_REQUIRED'
 
 export default function LogsPage() {
   const { alerts } = useBMS()
@@ -33,6 +33,7 @@ export default function LogsPage() {
   const filterBtns: { label: string; value: SeverityFilter }[] = [
     { label: 'All', value: 'ALL' },
     { label: 'Critical', value: 'CRITICAL' },
+    { label: 'Severe', value: 'SEVERE' },
     { label: 'Attention', value: 'ATTENTION_REQUIRED' },
   ]
 
@@ -140,16 +141,18 @@ export default function LogsPage() {
                 {alert.code}
               </span>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <AlertTriangle
-                  size={11}
-                  color={alert.severity === AlertSeverity.CRITICAL ? colors.status.critical : colors.status.warning}
-                />
-                <span style={{
-                  fontFamily: fonts.mono, fontSize: '10px', fontWeight: 600,
-                  color: alert.severity === AlertSeverity.CRITICAL ? colors.status.critical : colors.status.warning,
-                }}>
-                  {alert.severity === AlertSeverity.CRITICAL ? 'CRITICAL' : 'ATTENTION'}
-                </span>
+                {(() => {
+                  const c = alert.severity === AlertSeverity.CRITICAL ? colors.status.critical
+                    : alert.severity === AlertSeverity.SEVERE ? '#f97316'
+                    : colors.status.warning
+                  const label = alert.severity === AlertSeverity.CRITICAL ? 'CRITICAL'
+                    : alert.severity === AlertSeverity.SEVERE ? 'SEVERE'
+                    : 'ATTENTION'
+                  return <>
+                    <AlertTriangle size={11} color={c} />
+                    <span style={{ fontFamily: fonts.mono, fontSize: '10px', fontWeight: 600, color: c }}>{label}</span>
+                  </>
+                })()}
               </div>
               <span style={{ fontFamily: fonts.body, fontSize: '12px', color: colors.text.secondary }}>
                 {alert.message}

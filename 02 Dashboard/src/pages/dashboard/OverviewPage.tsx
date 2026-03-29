@@ -116,48 +116,12 @@ export default function OverviewPage() {
         })()}
       </div>
 
-      {/* === Row 2: Battery Stats === */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginTop: '0px' }}>
-        <StatCard
-          label="State of Health"
-          value={data.soh.toFixed(1)}
-          unit="%"
-          subtext={`Cycle degradation: ${data.soh < 70 ? 'High' : 'Normal'}`}
-          icon={Heart}
-          color={data.soh < 70 ? colors.status.warning : colors.status.nominal}
-        />
-        <StatCard
-          label="Remaining Useful Life"
-          value={data.rulCycles}
-          unit="cycles"
-          subtext={`${data.rulDays} days remaining`}
-          icon={RotateCw}
-          color={data.rulCycles < 400 ? colors.status.warning : colors.status.nominal}
-        />
-        <StatCard
-          label="Pack Power"
-          value={(data.power / 1000).toFixed(1)}
-          unit="kW"
-          subtext={`${data.voltage.toFixed(1)}V · ${data.current.toFixed(1)}A`}
-          icon={Zap}
-          color={chartColors.primary}
-        />
-        <StatCard
-          label="Pack Temp"
-          value={data.packTemp.toFixed(1)}
-          unit="°C"
-          subtext={`Ambient: ${data.ambientTemp.toFixed(1)}°C · Fan: ${data.fanStatus ? 'ON' : 'OFF'}`}
-          icon={Thermometer}
-          color={data.packTemp > 45 ? colors.status.critical : data.packTemp > 35 ? colors.status.warning : colors.status.nominal}
-        />
-      </div>
-
-      {/* === Row 3: Charts === */}
+      {/* === Row 2: Charts === */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 0.65fr', gap: '16px' }}>
         <GlassCard title="State of Charge">
           <SocTimeChart />
           <div style={{ textAlign: 'center', fontFamily: fonts.mono, fontSize: '12px', color: colors.text.primary, marginTop: '8px' }}>
-            {data.soc.toFixed(1)}% &nbsp;·&nbsp; {data.remainingRangeKm.toFixed(0)} km remaining
+            {data.soc.toFixed(1)}%
           </div>
         </GlassCard>
         <GlassCard title="Estimated Range">
@@ -233,6 +197,42 @@ export default function OverviewPage() {
         </GlassCard>
       </div>
 
+      {/* === Row 3: Battery Stats === */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+        <StatCard
+          label="State of Health"
+          value={data.soh.toFixed(1)}
+          unit="%"
+          subtext={`Cycle degradation: ${data.soh < 70 ? 'High' : 'Normal'}`}
+          icon={Heart}
+          color={data.soh < 70 ? colors.status.warning : colors.status.nominal}
+        />
+        <StatCard
+          label="Remaining Useful Life"
+          value={data.rulCycles}
+          unit="cycles"
+          subtext={`${data.rulDays} days remaining`}
+          icon={RotateCw}
+          color={data.rulCycles < 400 ? colors.status.warning : colors.status.nominal}
+        />
+        <StatCard
+          label="Pack Power"
+          value={(data.power / 1000).toFixed(1)}
+          unit="kW"
+          subtext={`${data.voltage.toFixed(1)}V · ${data.current.toFixed(1)}A`}
+          icon={Zap}
+          color={chartColors.primary}
+        />
+        <StatCard
+          label="Pack Temp"
+          value={data.packTemp.toFixed(1)}
+          unit="°C"
+          subtext={`Ambient: ${data.ambientTemp.toFixed(1)}°C · Fan: ${data.fanStatus ? 'ON' : 'OFF'}`}
+          icon={Thermometer}
+          color={data.packTemp > 45 ? colors.status.critical : data.packTemp > 35 ? colors.status.warning : colors.status.nominal}
+        />
+      </div>
+
       {/* === Row 4: Sensors + Alerts + Temperature === */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 2fr', gap: '16px' }}>
         <GlassCard title="Sensor Readings">
@@ -250,7 +250,16 @@ export default function OverviewPage() {
         <GlassCard>
           <MiniAlertPanel alerts={alerts} />
         </GlassCard>
-        <GlassCard title="Battery & Ambient Temp">
+        <GlassCard title="Battery & Ambient Temp" headerRight={
+          <div style={{ display: 'flex', gap: '14px' }}>
+            {[{ label: 'Ambient', color: '#7947BD' }, { label: 'Pack', color: '#b18ddd' }].map(({ label, color }) => (
+              <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                <div style={{ width: 10, height: 10, borderRadius: 2, background: color }} />
+                <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '11px', color: '#6b7280' }}>{label}</span>
+              </div>
+            ))}
+          </div>
+        }>
           <TemperatureChart />
         </GlassCard>
       </div>

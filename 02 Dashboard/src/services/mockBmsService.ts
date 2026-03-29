@@ -39,6 +39,10 @@ const generateMockData = (prevData: BMSData | null): BMSData => {
   const avgSpeed = velocity > 0 ? velocity : 40
   const remainingTimeMinutes = remainingRangeKm / avgSpeed * 60
 
+  const voltageAnomaly = voltage > 445 || Math.random() > 0.98
+  const currentAnomaly = current > 50 || (Math.random() > 0.98 && !isCharging)
+  const relayStatus: 'CONNECTED' | 'DISCONNECTED' = voltageAnomaly || currentAnomaly ? 'DISCONNECTED' : 'CONNECTED'
+
   return {
     soc: parseFloat(soc.toFixed(1)),
     soh: parseFloat(soh.toFixed(1)),
@@ -68,13 +72,13 @@ const generateMockData = (prevData: BMSData | null): BMSData => {
     coolantInletTemp: parseFloat(coolantInletTemp.toFixed(1)),
 
     fanStatus: temp > 35,
-    relayStatus: voltage > 440 || temp > 70 ? 'DISCONNECTED' : 'CONNECTED',
+    relayStatus,
     isCharging,
 
     capacityFadeDetected: Math.random() > 0.98,
     thermalRunawayRisk: temp > 60,
-    voltageAnomaly: voltage > 445 || Math.random() > 0.98,
-    currentAnomaly: current > 50 || (Math.random() > 0.98 && !isCharging),
+    voltageAnomaly,
+    currentAnomaly,
     batterySwellDetected: Math.random() > 0.995,
     waterLeakageDetected: Math.random() > 0.995,
 
@@ -117,22 +121,22 @@ export const useBMSData = () => {
         const newAlerts: BMSAlert[] = []
         const ts = Date.now()
 
-        if (d.waterLeakageDetected)
-          newAlerts.push({ id: `leak-${ts}`, code: 'HUM-01', message: 'Humidity in Battery Comp!', severity: AlertSeverity.CRITICAL, timestamp: ts })
-        if (d.batterySwellDetected)
-          newAlerts.push({ id: `swell-${ts}`, code: 'PRS-01', message: 'Battery Pack Swelling Detected!', severity: AlertSeverity.CRITICAL, timestamp: ts })
         if (d.voltageAnomaly)
           newAlerts.push({ id: `volt-${ts}`, code: 'VOL-01', message: 'Abnormal Voltage Spikes!', severity: AlertSeverity.CRITICAL, timestamp: ts })
         if (d.currentAnomaly)
           newAlerts.push({ id: `curr-${ts}`, code: 'CUR-01', message: 'Abnormal Current Spikes!', severity: AlertSeverity.CRITICAL, timestamp: ts })
         if (d.thermalRunawayRisk)
-          newAlerts.push({ id: `therm-${ts}`, code: 'THM-01', message: 'High Pack Temperature!', severity: AlertSeverity.CRITICAL, timestamp: ts })
+          newAlerts.push({ id: `therm-${ts}`, code: 'THM-01', message: 'High Pack Temperature!', severity: AlertSeverity.SEVERE, timestamp: ts })
+        if (d.waterLeakageDetected)
+          newAlerts.push({ id: `leak-${ts}`, code: 'HUM-01', message: 'Water Leak Detected!', severity: AlertSeverity.SEVERE, timestamp: ts })
+        if (d.batterySwellDetected)
+          newAlerts.push({ id: `swell-${ts}`, code: 'PRS-01', message: 'Battery Pack Swelling Detected!', severity: AlertSeverity.SEVERE, timestamp: ts })
+        if (prev && (prev.soc - d.soc) > 0.5)
+          newAlerts.push({ id: `socdrop-${ts}`, code: 'SOC-02', message: `Rapid SoC Drop! (${prev.soc.toFixed(1)}% → ${d.soc.toFixed(1)}%)`, severity: AlertSeverity.SEVERE, timestamp: ts })
         if (d.capacityFadeDetected)
           newAlerts.push({ id: `cap-${ts}`, code: 'CAP-01', message: 'Abnormal Capacity Fade', severity: AlertSeverity.ATTENTION_REQUIRED, timestamp: ts })
         if (d.soc < 20)
           newAlerts.push({ id: `soc-${ts}`, code: 'SOC-01', message: 'Low Battery Charge', severity: AlertSeverity.ATTENTION_REQUIRED, timestamp: ts })
-        if (prev && (prev.soc - d.soc) > 0.5)
-          newAlerts.push({ id: `socdrop-${ts}`, code: 'SOC-02', message: `Rapid SoC Drop! (${prev.soc.toFixed(1)}% → ${d.soc.toFixed(1)}%)`, severity: AlertSeverity.CRITICAL, timestamp: ts })
 
         if (newAlerts.length > 0)
           setAlerts((a) => [...newAlerts, ...a].slice(0, 200))

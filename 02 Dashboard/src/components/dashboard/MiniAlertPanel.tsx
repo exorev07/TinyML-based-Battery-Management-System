@@ -33,8 +33,10 @@ export function MiniAlertPanel({ alerts }: MiniAlertPanelProps) {
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           {recent.map((alert, i) => {
-            const isCritical = alert.severity === AlertSeverity.CRITICAL
-            const alertColor = isCritical ? colors.status.critical : colors.status.warning
+            const alertColor =
+              alert.severity === AlertSeverity.CRITICAL ? colors.status.critical :
+              alert.severity === AlertSeverity.SEVERE ? '#f97316' :
+              colors.status.warning
             return (
               <div key={alert.id} style={{
                 display: 'flex', flexDirection: 'column', gap: '2px',

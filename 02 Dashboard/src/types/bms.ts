@@ -1,5 +1,6 @@
 export const AlertSeverity = {
   ATTENTION_REQUIRED: 'ATTENTION_REQUIRED',
+  SEVERE: 'SEVERE',
   CRITICAL: 'CRITICAL',
 } as const
 
@@ -76,19 +77,22 @@ export interface HistoryPoint {
   power: number
 }
 
-export type SystemStatus = 'NOMINAL' | 'WARNING' | 'CRITICAL'
+export type SystemStatus = 'NOMINAL' | 'WARNING' | 'SEVERE' | 'CRITICAL'
 
 export function getSystemStatus(data: BMSData): SystemStatus {
+  // CRITICAL: voltage/current anomaly → relay disconnects
+  if (data.voltageAnomaly || data.currentAnomaly) return 'CRITICAL'
+
+  // SEVERE: thermal, leak, swell, relay disconnected
   if (
+    data.thermalRunawayRisk ||
     data.waterLeakageDetected ||
     data.batterySwellDetected ||
-    data.thermalRunawayRisk ||
     data.relayStatus === 'DISCONNECTED'
-  ) return 'CRITICAL'
+  ) return 'SEVERE'
 
+  // WARNING: attention-level issues
   if (
-    data.voltageAnomaly ||
-    data.currentAnomaly ||
     data.capacityFadeDetected ||
     data.soc < 20 ||
     data.packTemp > 45 ||
