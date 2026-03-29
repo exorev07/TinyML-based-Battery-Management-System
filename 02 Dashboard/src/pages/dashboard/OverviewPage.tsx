@@ -1,4 +1,4 @@
-import { Gauge, Zap, Heart, Thermometer, Droplets, Wind, Activity, Bolt, RotateCw, Plug, PlugZap } from 'lucide-react'
+import { Gauge, Zap, Heart, Thermometer, Droplets, Wind, Activity, Bolt, RotateCw } from 'lucide-react'
 import { useBMS } from '../../components/dashboard/DashboardLayout'
 import { GlassCard } from '../../components/dashboard/GlassCard'
 import { RadialGauge } from '../../components/dashboard/RadialGauge'
@@ -68,21 +68,48 @@ export default function OverviewPage() {
                   </span>
                 </div>
               </div>
-              {/* Icon */}
+              {/* Plug & Socket SVG */}
               <div style={{ width: '100%', flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <div style={{
-                  width: 110, height: 110, borderRadius: '50%',
-                  background: isConn ? 'rgba(121,71,189,0.08)' : 'rgba(255,255,255,0.03)',
-                  border: `2px solid ${isConn ? 'rgba(177,141,221,0.3)' : 'rgba(255,255,255,0.08)'}`,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  transition: 'all 0.3s',
-                  boxShadow: isConn ? `0 0 20px rgba(121,71,189,0.2)` : 'none',
-                }}>
-                  {isConn
-                    ? <PlugZap size={40} color={colors.amethyst.light} style={{ transition: 'color 0.3s' }} />
-                    : <Plug size={40} color={colors.text.muted} style={{ transition: 'color 0.3s', opacity: 0.5 }} />
-                  }
-                </div>
+                {(() => {
+                  const fill = isConn ? colors.amethyst.light : colors.text.muted
+                  const fillDark = isConn ? colors.amethyst.mid : 'rgba(75,85,99,0.8)'
+                  const op = isConn ? 1 : 0.4
+                  const tr = { transition: 'fill 0.6s, opacity 0.6s' }
+                  // All coords on a 200x100 canvas, centered at y=50
+                  return (
+                    <svg width="240" height="120" viewBox="15 0 220 100">
+                      {/* === PLUG (left side) === */}
+                      <g style={{ transition: 'transform 1s cubic-bezier(0.4,0,0.2,1)', transform: isConn ? 'translateX(44px)' : 'translateX(0px)' }}>
+                        {/* Wire */}
+                        <rect x="2" y="44" width="24" height="12" rx="6" fill={fill} opacity={op * 0.65} style={tr} />
+                        {/* Body: flat right edge, rounded left */}
+                        <path d="M72,22 L72,78 L52,78 C34,78 22,66 22,50 C22,34 34,22 52,22 Z"
+                          fill={fill} opacity={op} style={tr} />
+                        {/* Top prong */}
+                        <rect x="72" y="34" width="22" height="7" rx="3" fill={fill} opacity={op} style={tr} />
+                        <rect x="89" y="34" width="5" height="7" rx="2" fill={fillDark} opacity={op} style={tr} />
+                        {/* Bottom prong */}
+                        <rect x="72" y="59" width="22" height="7" rx="3" fill={fill} opacity={op} style={tr} />
+                        <rect x="89" y="59" width="5" height="7" rx="2" fill={fillDark} opacity={op} style={tr} />
+                      </g>
+                      {/* === SOCKET (right side) === */}
+                      <g>
+                        {/* Wire (behind body) */}
+                        <rect x="174" y="44" width="24" height="12" rx="6" fill={fill} opacity={op * 0.65} style={tr} />
+                        {/* Body: flat left edge, rounded right */}
+                        <path d="M126,14 L126,86 L148,86 C166,86 178,70 178,50 C178,30 166,14 148,14 Z"
+                          fill={isConn ? colors.amethyst.mid : 'rgba(55,65,81,0.8)'} opacity={op} style={tr} />
+                        {/* Flat face recess on left side */}
+                        <rect x="119" y="24" width="7" height="52" rx="2" fill={fillDark} opacity={0.55} style={tr} />
+                      </g>
+                      {/* Glow at junction */}
+                      {isConn && (
+                        <ellipse cx="108" cy="50" rx="8" ry="16"
+                          fill="rgba(177,141,221,0.2)" style={{ filter: 'blur(5px)' }} />
+                      )}
+                    </svg>
+                  )
+                })()}
               </div>
             </GlassCard>
           )
@@ -165,14 +192,18 @@ export default function OverviewPage() {
           {/* Fan area */}
           <div style={{ width: '100%', flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <style>{`
-              @keyframes spin { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }
-              @keyframes spinSlow { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }
-              .fan-svg { animation: spin 0.8s linear infinite; }
-              .fan-svg.idle { animation: spinSlow 8s linear infinite; }
+              @keyframes spin { from { transform: rotate(360deg) } to { transform: rotate(0deg) } }
+              .fan-svg {
+                animation: spin 0.8s linear infinite;
+                transition: animation-duration 1.5s ease;
+              }
+              .fan-svg.idle {
+                animation-duration: 8s;
+              }
             `}</style>
             <svg
               className={data.fanStatus ? 'fan-svg' : 'fan-svg idle'}
-              width="150" height="150" viewBox="-15 -15 150 150"
+              width="150" height="150" viewBox="-22 -22 164 164"
               style={{
                 opacity: data.fanStatus ? 1 : 0.35,
                 transition: 'opacity 1s ease',
@@ -180,7 +211,7 @@ export default function OverviewPage() {
               }}
             >
               {/* Outer ring */}
-              <circle cx="60" cy="60" r="70" fill="none" stroke={data.fanStatus ? 'rgba(177,141,221,0.25)' : 'rgba(255,255,255,0.08)'} strokeWidth="3" style={{ transition: 'stroke 0.3s' }} />
+              <circle cx="60" cy="60" r="78" fill="none" stroke={data.fanStatus ? 'rgba(177,141,221,0.25)' : 'rgba(255,255,255,0.08)'} strokeWidth="3" style={{ transition: 'stroke 0.3s' }} />
               {/* 3 wide curved blades */}
               {[0, 120, 240].map((angle) => (
                 <path
