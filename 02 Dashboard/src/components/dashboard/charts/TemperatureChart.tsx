@@ -68,7 +68,7 @@ export function TemperatureChart() {
             <CartesianGrid stroke={chartColors.grid} strokeDasharray="3 3" vertical={false} />
             <XAxis
               dataKey="time"
-              ticks={(() => { const n = points.length - 1; return [points[0], points[Math.round(n/4)], points[Math.round(n/2)], points[Math.round(3*n/4)], points[n]].filter(Boolean).map(p => p.time) })()}
+              ticks={(() => { const n = points.length - 1; return [0, 1, 2, 3, 4, 5, 6].map(i => points[Math.round(i * n / 6)]).filter(Boolean).map(p => p.time) })()}
               tick={{ fill: chartColors.axis, fontSize: 10, fontFamily: fonts.mono, dy: 8 }}
               axisLine={{ stroke: chartColors.grid }} tickLine={false}
             />

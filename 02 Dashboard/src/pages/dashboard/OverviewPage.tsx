@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { EmailAuthProvider, reauthenticateWithCredential } from 'firebase/auth'
 import { auth } from '../../lib/firebase'
-import { Gauge, Zap, Heart, Thermometer, Droplets, Wind, Activity, Bolt, RotateCw, Settings } from 'lucide-react'
+import { Gauge, Zap, Heart, Thermometer, Droplets, Wind, Activity, Bolt, RotateCw, Power } from 'lucide-react'
 import { useBMS } from '../../components/dashboard/DashboardLayout'
 import { GlassCard } from '../../components/dashboard/GlassCard'
 import { RadialGauge } from '../../components/dashboard/RadialGauge'
@@ -15,7 +15,8 @@ import { fonts, colors, chartColors, glassCard } from '../../lib/styles'
 
 export default function OverviewPage() {
   const { data, alerts } = useBMS()
-  const [relayOverride, setRelayOverride] = useState<boolean | null>(null)
+  const [relayOverride, setRelayOverride] = useState<boolean>(true)
+  const [disconnectCause, setDisconnectCause] = useState<{ message: string; timestamp: number } | null>(null)
   const [showRelayModal, setShowRelayModal] = useState(false)
   const [relayPassword, setRelayPassword] = useState('')
   const [relayAuthError, setRelayAuthError] = useState('')
@@ -25,14 +26,16 @@ export default function OverviewPage() {
   const recentAlerts = alerts.filter(a => a.timestamp >= cutoff)
   const recentCodes = new Set(recentAlerts.map(a => a.code))
   const hasAlert = (code: string) => recentCodes.has(code)
-  const alertBasedRelay = !hasAlert('VOL-01') && !hasAlert('CUR-01') && !hasAlert('THM-01')
-  const isRelayConnected = relayOverride !== null ? relayOverride : alertBasedRelay
-  const disconnectCause = !isRelayConnected
-    ? alerts.filter(a => ['VOL-01', 'CUR-01', 'THM-01'].includes(a.code)).sort((a, b) => b.timestamp - a.timestamp)[0]
-    : null
+  const alertTriggered = hasAlert('VOL-01') || hasAlert('CUR-01') || hasAlert('THM-01')
 
-  // Reset override when alert state matches override (override no longer needed)
-  if (relayOverride !== null && relayOverride === alertBasedRelay) setRelayOverride(null)
+  // Latch: once an alert triggers disconnect, stay disconnected until manual reset via password
+  if (alertTriggered && relayOverride) {
+    const cause = alerts.filter(a => ['VOL-01', 'CUR-01', 'THM-01'].includes(a.code)).sort((a, b) => b.timestamp - a.timestamp)[0]
+    setRelayOverride(false)
+    if (cause) setDisconnectCause({ message: cause.message, timestamp: cause.timestamp })
+  }
+
+  const isRelayConnected = relayOverride
 
   const openRelayModal = () => {
     setRelayPassword('')
@@ -45,6 +48,7 @@ export default function OverviewPage() {
     if (!wantConnect) {
       // Disconnecting — no password needed
       setRelayOverride(false)
+      setDisconnectCause({ message: 'Manually disconnected by operator', timestamp: Date.now() })
       setShowRelayModal(false)
       return
     }
@@ -57,6 +61,7 @@ export default function OverviewPage() {
       const cred = EmailAuthProvider.credential(user.email, relayPassword)
       await reauthenticateWithCredential(user, cred)
       setRelayOverride(true)
+      setDisconnectCause(null)
       setShowRelayModal(false)
     } catch {
       setRelayAuthError('Incorrect password')
@@ -124,14 +129,14 @@ export default function OverviewPage() {
                     onClick={openRelayModal}
                     style={{
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      width: '28px', height: '28px', borderRadius: '8px', cursor: 'pointer',
+                      width: '24px', height: '24px', borderRadius: '6px', cursor: 'pointer',
                       background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(141,110,179,0.25)',
                       transition: 'background 0.2s',
                     }}
                     onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.1)')}
                     onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.05)')}
                   >
-                    <Settings size={14} color={colors.text.muted} />
+                    <Power size={12} color={colors.text.muted} />
                   </button>
                 </div>
               </div>
@@ -350,7 +355,7 @@ export default function OverviewPage() {
           onClick={() => setShowRelayModal(false)}
           style={{
             position: 'fixed', inset: 0, zIndex: 100,
-            background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)',
+            background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(8px)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}
         >
@@ -358,20 +363,23 @@ export default function OverviewPage() {
             onClick={e => e.stopPropagation()}
             style={{
               ...glassCard,
-              width: '380px', padding: '28px',
-              border: '1px solid rgba(141,110,179,0.45)',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+              width: '400px', padding: '32px',
+              border: '1px solid rgba(141,110,179,0.35)',
+              boxShadow: '0 12px 48px rgba(0,0,0,0.6), 0 0 0 1px rgba(141,110,179,0.1)',
+              animation: 'modalFadeIn 0.3s cubic-bezier(0.22,1,0.36,1)',
             }}
           >
             <h3 style={{
-              fontFamily: fonts.body, fontSize: '16px', fontWeight: 600,
-              color: colors.text.primary, margin: '0 0 6px',
+              fontFamily: fonts.heading, fontSize: '22px', fontWeight: 400,
+              background: 'linear-gradient(135deg, #ffffff 0%, #b18ddd 100%)',
+              WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+              margin: '0 0 8px', letterSpacing: '-0.01em',
             }}>
               {isRelayConnected ? 'Disconnect Relay' : 'Reconnect Relay'}
             </h3>
             <p style={{
-              fontFamily: fonts.body, fontSize: '13px', color: colors.text.muted,
-              margin: '0 0 20px', lineHeight: 1.5,
+              fontFamily: fonts.body, fontSize: '13px', color: colors.text.secondary,
+              margin: '0 0 24px', lineHeight: 1.6, letterSpacing: '0.01em',
             }}>
               {isRelayConnected
                 ? 'This will manually disconnect the battery relay. No authentication required.'
@@ -381,8 +389,9 @@ export default function OverviewPage() {
             {!isRelayConnected && (
               <>
                 <label style={{
-                  fontFamily: fonts.body, fontSize: '12px', fontWeight: 500,
-                  color: colors.text.secondary, display: 'block', marginBottom: '6px',
+                  fontFamily: fonts.body, fontSize: '11px', fontWeight: 500,
+                  color: colors.amethyst.light, display: 'block', marginBottom: '8px',
+                  textTransform: 'uppercase', letterSpacing: '0.08em',
                 }}>
                   Password
                 </label>
@@ -392,17 +401,27 @@ export default function OverviewPage() {
                   onChange={e => { setRelayPassword(e.target.value); setRelayAuthError('') }}
                   onKeyDown={e => e.key === 'Enter' && handleRelayToggle()}
                   placeholder="Enter your password"
+                  autoFocus
                   style={{
-                    width: '100%', padding: '10px 12px', borderRadius: '10px',
-                    background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(141,110,179,0.3)',
+                    width: '100%', padding: '12px 14px', borderRadius: '10px',
+                    background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(141,110,179,0.25)',
                     fontFamily: fonts.mono, fontSize: '13px', color: colors.text.primary,
                     outline: 'none', boxSizing: 'border-box',
+                    transition: 'border-color 0.2s, box-shadow 0.2s',
+                  }}
+                  onFocus={e => {
+                    e.target.style.borderColor = 'rgba(121,71,189,0.5)'
+                    e.target.style.boxShadow = '0 0 0 3px rgba(121,71,189,0.12)'
+                  }}
+                  onBlur={e => {
+                    e.target.style.borderColor = 'rgba(141,110,179,0.25)'
+                    e.target.style.boxShadow = 'none'
                   }}
                 />
                 {relayAuthError && (
                   <p style={{
                     fontFamily: fonts.body, fontSize: '12px', color: colors.status.critical,
-                    margin: '8px 0 0',
+                    margin: '10px 0 0',
                   }}>
                     {relayAuthError}
                   </p>
@@ -410,13 +429,22 @@ export default function OverviewPage() {
               </>
             )}
 
-            <div style={{ display: 'flex', gap: '10px', marginTop: '20px', justifyContent: 'flex-end' }}>
+            <div style={{ display: 'flex', gap: '12px', marginTop: '24px', justifyContent: 'flex-end' }}>
               <button
                 onClick={() => setShowRelayModal(false)}
                 style={{
-                  padding: '8px 18px', borderRadius: '10px', cursor: 'pointer',
-                  background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)',
-                  fontFamily: fonts.body, fontSize: '13px', fontWeight: 500, color: colors.text.muted,
+                  padding: '10px 20px', borderRadius: '10px', cursor: 'pointer',
+                  background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)',
+                  fontFamily: fonts.body, fontSize: '13px', fontWeight: 500, color: colors.text.secondary,
+                  transition: 'all 0.2s',
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.08)'
+                  e.currentTarget.style.borderColor = 'rgba(255,255,255,0.18)'
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.04)'
+                  e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'
                 }}
               >
                 Cancel
@@ -425,12 +453,23 @@ export default function OverviewPage() {
                 onClick={handleRelayToggle}
                 disabled={relayLoading}
                 style={{
-                  padding: '8px 18px', borderRadius: '10px', cursor: relayLoading ? 'wait' : 'pointer',
-                  background: isRelayConnected ? 'rgba(248,113,113,0.15)' : 'rgba(52,211,153,0.15)',
-                  border: `1px solid ${isRelayConnected ? 'rgba(248,113,113,0.35)' : 'rgba(52,211,153,0.35)'}`,
+                  padding: '10px 22px', borderRadius: '10px', cursor: relayLoading ? 'wait' : 'pointer',
+                  background: isRelayConnected ? 'rgba(248,113,113,0.12)' : 'rgba(121,71,189,0.2)',
+                  border: `1px solid ${isRelayConnected ? 'rgba(248,113,113,0.3)' : 'rgba(121,71,189,0.4)'}`,
                   fontFamily: fonts.body, fontSize: '13px', fontWeight: 600,
-                  color: isRelayConnected ? colors.status.critical : colors.status.nominal,
+                  color: isRelayConnected ? colors.status.critical : colors.amethyst.light,
                   opacity: relayLoading ? 0.6 : 1,
+                  transition: 'all 0.2s',
+                }}
+                onMouseEnter={e => {
+                  if (!relayLoading) {
+                    e.currentTarget.style.background = isRelayConnected ? 'rgba(248,113,113,0.2)' : 'rgba(121,71,189,0.3)'
+                    e.currentTarget.style.boxShadow = isRelayConnected ? '0 0 16px rgba(248,113,113,0.15)' : '0 0 16px rgba(121,71,189,0.2)'
+                  }
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.background = isRelayConnected ? 'rgba(248,113,113,0.12)' : 'rgba(121,71,189,0.2)'
+                  e.currentTarget.style.boxShadow = 'none'
                 }}
               >
                 {relayLoading ? 'Verifying...' : isRelayConnected ? 'Disconnect' : 'Reconnect'}
