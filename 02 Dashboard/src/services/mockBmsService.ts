@@ -25,7 +25,9 @@ const generateMockData = (prevData: BMSData | null): BMSData => {
   const coolantHeatercoreTemp = 55 + (Math.random() * 10)
   const coolantInletTemp = 32 + (Math.random() * 8)
 
-  const isCharging = velocity === 0
+  const isCharging = prevData
+    ? prevData.isCharging ? Math.random() > 0.04 : Math.random() > 0.97
+    : false
   const socStep = isCharging ? 0.2 : -0.15
   const soc = prevData ? Math.max(0, Math.min(100, prevData.soc + socStep)) : 78
   const remainingRangeKm = soc * 3.5
@@ -72,6 +74,11 @@ const generateMockData = (prevData: BMSData | null): BMSData => {
     coolantInletTemp: parseFloat(coolantInletTemp.toFixed(1)),
 
     fanStatus: temp > 35,
+    fanRpm: temp > 35
+      ? Math.round(prevData?.fanRpm
+          ? Math.max(2500, Math.min(4000, prevData.fanRpm + (Math.random() - 0.5) * 200))
+          : 2500 + Math.random() * 1500)
+      : 0,
     relayStatus,
     isCharging,
 

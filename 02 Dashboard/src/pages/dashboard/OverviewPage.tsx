@@ -11,7 +11,7 @@ import { TemperatureChart } from '../../components/dashboard/charts/TemperatureC
 import { fonts, colors, chartColors } from '../../lib/styles'
 
 export default function OverviewPage() {
-  const { data, history, alerts } = useBMS()
+  const { data, alerts } = useBMS()
 
   if (!data) return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh', fontFamily: fonts.body, color: colors.text.muted }}>
@@ -162,7 +162,7 @@ export default function OverviewPage() {
                 transition: animation-duration 1.5s ease;
               }
               .fan-svg.idle {
-                animation-duration: 8s;
+                animation-play-state: paused;
               }
             `}</style>
             <svg
@@ -194,6 +194,9 @@ export default function OverviewPage() {
               <circle cx="60" cy="60" r="5" fill={data.fanStatus ? colors.amethyst.light : 'rgba(255,255,255,0.2)'} style={{ transition: 'fill 0.3s' }} />
             </svg>
           </div>
+          <div style={{ textAlign: 'center', fontFamily: fonts.mono, fontSize: '12px', color: colors.text.primary, marginTop: '8px' }}>
+            {data.fanRpm > 0 ? `${data.fanRpm.toLocaleString()} RPM` : '0 RPM'}
+          </div>
         </GlassCard>
       </div>
 
@@ -224,12 +227,11 @@ export default function OverviewPage() {
           color={chartColors.primary}
         />
         <StatCard
-          label="Pack Temp"
-          value={data.packTemp.toFixed(1)}
-          unit="°C"
-          subtext={`Ambient: ${data.ambientTemp.toFixed(1)}°C · Fan: ${data.fanStatus ? 'ON' : 'OFF'}`}
-          icon={Thermometer}
-          color={data.packTemp > 45 ? colors.status.critical : data.packTemp > 35 ? colors.status.warning : colors.status.nominal}
+          label="Charging Status"
+          value={data.isCharging ? 'CHARGING' : 'IDLE'}
+          subtext={data.isCharging ? `${(data.power / 1000).toFixed(1)} kW` : 'Not charging'}
+          icon={Zap}
+          color={data.isCharging ? colors.status.nominal : colors.text.muted}
         />
       </div>
 

@@ -49,6 +49,7 @@ export interface BMSData {
 
   // Hardware Status
   fanStatus: boolean
+  fanRpm: number
   relayStatus: 'CONNECTED' | 'DISCONNECTED'
   isCharging: boolean
 
