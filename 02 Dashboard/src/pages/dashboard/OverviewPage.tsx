@@ -13,6 +13,10 @@ import { fonts, colors, chartColors } from '../../lib/styles'
 export default function OverviewPage() {
   const { data, alerts } = useBMS()
 
+  const cutoff = Date.now() - 30_000
+  const recentCodes = new Set(alerts.filter(a => a.timestamp >= cutoff).map(a => a.code))
+  const hasAlert = (code: string) => recentCodes.has(code)
+
   if (!data) return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh', fontFamily: fonts.body, color: colors.text.muted }}>
       Initializing telemetry...
@@ -239,10 +243,10 @@ export default function OverviewPage() {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 2fr', gap: '16px' }}>
         <GlassCard title="Sensor Readings">
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-            <SensorTile label="Voltage" value={data.voltage.toFixed(1)} unit="V" icon={Bolt} alert={data.voltageAnomaly} />
-            <SensorTile label="Current" value={data.current.toFixed(1)} unit="A" icon={Activity} alert={data.currentAnomaly} />
-            <SensorTile label="Humidity" value={data.humidity.toFixed(1)} unit="%" icon={Droplets} alert={data.waterLeakageDetected} />
-            <SensorTile label="Pressure" value={data.pressure.toFixed(0)} unit="hPa" icon={Gauge} alert={data.batterySwellDetected} />
+            <SensorTile label="Voltage" value={data.voltage.toFixed(1)} unit="V" icon={Bolt} alert={hasAlert('VOL-01')} />
+            <SensorTile label="Current" value={data.current.toFixed(1)} unit="A" icon={Activity} alert={hasAlert('CUR-01')} />
+            <SensorTile label="Humidity" value={data.humidity.toFixed(1)} unit="%" icon={Droplets} alert={hasAlert('HUM-01')} />
+            <SensorTile label="Pressure" value={data.pressure.toFixed(0)} unit="hPa" icon={Gauge} alert={hasAlert('PRS-01')} />
             <SensorTile label="Coolant Inlet" value={data.coolantInletTemp.toFixed(1)} unit="°C" icon={Thermometer} />
             <SensorTile label="Heat Exch." value={data.heatExchangerTemp.toFixed(1)} unit="°C" icon={Wind} />
             <SensorTile label="Heatercore" value={data.coolantHeatercoreTemp.toFixed(1)} unit="°C" icon={Thermometer} />

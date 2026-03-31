@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { AlertSeverity } from '../types/bms'
 import type { BMSData, HistoryPoint, BMSAlert } from '../types/bms'
 
@@ -98,6 +98,7 @@ export const useBMSData = () => {
   const [data, setData] = useState<BMSData | null>(null)
   const [history, setHistory] = useState<HistoryPoint[]>([])
   const [alerts, setAlerts] = useState<BMSAlert[]>([])
+  const lastFired = useRef<Record<string, number>>({})
 
   useEffect(() => {
     const initialData = generateMockData(null)
@@ -128,25 +129,28 @@ export const useBMSData = () => {
 
         const newAlerts: BMSAlert[] = []
         const ts = Date.now()
+        const DEBOUNCE_MS = 60_000
+        const due = (code: string) => ts - (lastFired.current[code] ?? 0) > DEBOUNCE_MS
+        const fire = (alert: BMSAlert) => { lastFired.current[alert.code] = ts; newAlerts.push(alert) }
 
-        if (d.voltageAnomaly)
-          newAlerts.push({ id: `volt-${ts}`, code: 'VOL-01', message: 'Abnormal Voltage Spikes!', severity: AlertSeverity.CRITICAL, timestamp: ts })
-        if (d.currentAnomaly)
-          newAlerts.push({ id: `curr-${ts}`, code: 'CUR-01', message: 'Abnormal Current Spikes!', severity: AlertSeverity.CRITICAL, timestamp: ts })
-        if (d.thermalRunawayRisk)
-          newAlerts.push({ id: `therm-${ts}`, code: 'THM-01', message: 'Thermal Runaway Risk!', severity: AlertSeverity.CRITICAL, timestamp: ts })
-        else if (d.packTemp > 45)
-          newAlerts.push({ id: `therm2-${ts}`, code: 'THM-02', message: `Elevated Pack Temperature! (${d.packTemp.toFixed(1)}°C)`, severity: AlertSeverity.SEVERE, timestamp: ts })
-        if (d.waterLeakageDetected)
-          newAlerts.push({ id: `leak-${ts}`, code: 'HUM-01', message: 'Water Leak Detected!', severity: AlertSeverity.SEVERE, timestamp: ts })
-        if (d.batterySwellDetected)
-          newAlerts.push({ id: `swell-${ts}`, code: 'PRS-01', message: 'Battery Pack Swelling Detected!', severity: AlertSeverity.SEVERE, timestamp: ts })
-        if (d.socDropDetected)
-          newAlerts.push({ id: `socdrop-${ts}`, code: 'SOC-02', message: `Rapid SoC Drop! (${prev!.soc.toFixed(1)}% → ${d.soc.toFixed(1)}%)`, severity: AlertSeverity.SEVERE, timestamp: ts })
-        if (d.capacityFadeDetected)
-          newAlerts.push({ id: `cap-${ts}`, code: 'CAP-01', message: 'Abnormal Capacity Fade', severity: AlertSeverity.ATTENTION_REQUIRED, timestamp: ts })
-        if (d.soc < 20)
-          newAlerts.push({ id: `soc-${ts}`, code: 'SOC-01', message: 'Low Battery Charge', severity: AlertSeverity.ATTENTION_REQUIRED, timestamp: ts })
+        if (d.voltageAnomaly && due('VOL-01'))
+          fire({ id: `volt-${ts}`, code: 'VOL-01', message: 'Abnormal Voltage Spikes!', severity: AlertSeverity.CRITICAL, timestamp: ts })
+        if (d.currentAnomaly && due('CUR-01'))
+          fire({ id: `curr-${ts}`, code: 'CUR-01', message: 'Abnormal Current Spikes!', severity: AlertSeverity.CRITICAL, timestamp: ts })
+        if (d.thermalRunawayRisk && due('THM-01'))
+          fire({ id: `therm-${ts}`, code: 'THM-01', message: 'Thermal Runaway Risk!', severity: AlertSeverity.CRITICAL, timestamp: ts })
+        else if (d.packTemp > 45 && due('THM-02'))
+          fire({ id: `therm2-${ts}`, code: 'THM-02', message: `Elevated Pack Temperature! (${d.packTemp.toFixed(1)}°C)`, severity: AlertSeverity.SEVERE, timestamp: ts })
+        if (d.waterLeakageDetected && due('HUM-01'))
+          fire({ id: `leak-${ts}`, code: 'HUM-01', message: 'Water Leak Detected!', severity: AlertSeverity.SEVERE, timestamp: ts })
+        if (d.batterySwellDetected && due('PRS-01'))
+          fire({ id: `swell-${ts}`, code: 'PRS-01', message: 'Battery Pack Swelling Detected!', severity: AlertSeverity.SEVERE, timestamp: ts })
+        if (d.socDropDetected && due('SOC-02'))
+          fire({ id: `socdrop-${ts}`, code: 'SOC-02', message: `Rapid SoC Drop! (${prev!.soc.toFixed(1)}% → ${d.soc.toFixed(1)}%)`, severity: AlertSeverity.SEVERE, timestamp: ts })
+        if (d.capacityFadeDetected && due('CAP-01'))
+          fire({ id: `cap-${ts}`, code: 'CAP-01', message: 'Abnormal Capacity Fade', severity: AlertSeverity.ATTENTION_REQUIRED, timestamp: ts })
+        if (d.soc < 20 && due('SOC-01'))
+          fire({ id: `soc-${ts}`, code: 'SOC-01', message: 'Low Battery Charge', severity: AlertSeverity.ATTENTION_REQUIRED, timestamp: ts })
 
         if (newAlerts.length > 0)
           setAlerts((a) => [...newAlerts, ...a].slice(0, 200))
