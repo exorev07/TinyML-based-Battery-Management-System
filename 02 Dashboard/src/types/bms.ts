@@ -12,6 +12,7 @@ export interface BMSAlert {
   message: string
   severity: AlertSeverity
   timestamp: number
+  action?: string
 }
 
 export interface BMSData {

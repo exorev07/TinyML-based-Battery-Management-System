@@ -177,5 +177,9 @@ export const useBMSData = () => {
     return () => clearInterval(interval)
   }, [])
 
-  return { data, history, alerts }
+  const addAlert = (alert: BMSAlert) => {
+    setAlerts((a) => [alert, ...a].slice(0, 200))
+  }
+
+  return { data, history, alerts, addAlert }
 }

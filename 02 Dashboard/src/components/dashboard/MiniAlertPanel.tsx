@@ -10,7 +10,7 @@ interface MiniAlertPanelProps {
 
 export function MiniAlertPanel({ alerts }: MiniAlertPanelProps) {
   const navigate = useNavigate()
-  const recent = alerts.slice(0, 4)
+  const recent = alerts.filter(a => a.code !== 'RLY-02').slice(0, 4)
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', height: '100%' }}>

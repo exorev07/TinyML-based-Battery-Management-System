@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { EmailAuthProvider, reauthenticateWithCredential } from 'firebase/auth'
 import { auth } from '../../lib/firebase'
 import { Gauge, Zap, Heart, Thermometer, Droplets, Wind, Activity, Bolt, RotateCw, Power } from 'lucide-react'
@@ -14,7 +14,7 @@ import { TemperatureChart } from '../../components/dashboard/charts/TemperatureC
 import { fonts, colors, chartColors, glassCard } from '../../lib/styles'
 
 export default function OverviewPage() {
-  const { data, alerts } = useBMS()
+  const { data, alerts, addAlert } = useBMS()
   const [relayOverride, setRelayOverride] = useState<boolean>(true)
   const [disconnectCause, setDisconnectCause] = useState<{ message: string; timestamp: number } | null>(null)
   const [showRelayModal, setShowRelayModal] = useState(false)
@@ -28,14 +28,21 @@ export default function OverviewPage() {
   const hasAlert = (code: string) => recentCodes.has(code)
   const alertTriggered = hasAlert('VOL-01') || hasAlert('CUR-01') || hasAlert('THM-01')
 
-  // Latch: once an alert triggers disconnect, stay disconnected until manual reset via password
-  if (alertTriggered && relayOverride) {
-    const cause = alerts.filter(a => ['VOL-01', 'CUR-01', 'THM-01'].includes(a.code)).sort((a, b) => b.timestamp - a.timestamp)[0]
-    setRelayOverride(false)
-    if (cause) setDisconnectCause({ message: cause.message, timestamp: cause.timestamp })
-  }
-
   const isRelayConnected = relayOverride
+
+  // Latch: once an alert triggers disconnect, stay disconnected until manual reset via password
+  // Only fires on actual transition (connected → disconnected), so RLY-01 is logged exactly once
+  useEffect(() => {
+    if (alertTriggered && relayOverride) {
+      const cause = alerts.filter(a => ['VOL-01', 'CUR-01', 'THM-01'].includes(a.code)).sort((a, b) => b.timestamp - a.timestamp)[0]
+      const ts = Date.now()
+      setRelayOverride(false)
+      if (cause) {
+        setDisconnectCause({ message: cause.message, timestamp: cause.timestamp })
+        addAlert({ id: `rly-${ts}`, code: 'RLY-01', message: `Relay auto-disconnected: ${cause.message}`, severity: 'CRITICAL', timestamp: ts, action: 'Relay Disconnected' })
+      }
+    }
+  }, [alertTriggered])
 
   const openRelayModal = () => {
     setRelayPassword('')
@@ -47,8 +54,10 @@ export default function OverviewPage() {
     const wantConnect = !isRelayConnected
     if (!wantConnect) {
       // Disconnecting — no password needed
+      const ts = Date.now()
       setRelayOverride(false)
-      setDisconnectCause({ message: 'Manually disconnected by operator', timestamp: Date.now() })
+      setDisconnectCause({ message: 'Manually Disconnected', timestamp: ts })
+      addAlert({ id: `rly-${ts}`, code: 'RLY-01', message: 'Relay manually disconnected by operator', severity: 'ATTENTION_REQUIRED', timestamp: ts, action: 'Relay Disconnected' })
       setShowRelayModal(false)
       return
     }
@@ -60,8 +69,10 @@ export default function OverviewPage() {
     try {
       const cred = EmailAuthProvider.credential(user.email, relayPassword)
       await reauthenticateWithCredential(user, cred)
+      const ts = Date.now()
       setRelayOverride(true)
       setDisconnectCause(null)
+      addAlert({ id: `rly-${ts}`, code: 'RLY-02', message: 'Relay reconnected after admin verification', severity: 'ATTENTION_REQUIRED', timestamp: ts, action: 'Relay Reconnected' })
       setShowRelayModal(false)
     } catch {
       setRelayAuthError('Incorrect password')
@@ -102,7 +113,7 @@ export default function OverviewPage() {
         {(() => {
           const isConn = isRelayConnected
           return (
-            <GlassCard style={{ display: 'flex', flexDirection: 'column', paddingBottom: '2px' }}>
+            <GlassCard style={{ display: 'flex', flexDirection: 'column', paddingBottom: '12px' }}>
               {/* Header row with title + status badge */}
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '-10px' }}>
                 <h3 style={{
@@ -186,13 +197,13 @@ export default function OverviewPage() {
                   )
                 })()}
               </div>
-              <div style={{ height: '36px', padding: '0 4px 4px', textAlign: 'center', opacity: disconnectCause ? 1 : 0, transition: 'opacity 0.3s' }}>
-                <div style={{ fontFamily: fonts.body, fontSize: '12px', fontWeight: 500, color: colors.status.critical, lineHeight: 1.4 }}>
+              <div style={{ height: '24px', padding: '0 4px 4px', textAlign: 'center', opacity: disconnectCause ? 1 : 0, transition: 'opacity 0.3s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                <span style={{ fontFamily: fonts.body, fontSize: '12px', fontWeight: 500, color: colors.status.critical }}>
                   {disconnectCause?.message ?? ''}
-                </div>
-                <div style={{ fontFamily: fonts.body, fontSize: '12px', fontWeight: 500, color: colors.text.muted, marginTop: '2px' }}>
+                </span>
+                <span style={{ fontFamily: fonts.mono, fontSize: '11px', color: colors.text.muted }}>
                   {disconnectCause ? new Date(disconnectCause.timestamp).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : ''}
-                </div>
+                </span>
               </div>
             </GlassCard>
           )

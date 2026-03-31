@@ -9,9 +9,10 @@ interface BMSContextValue {
   data: BMSData | null
   history: HistoryPoint[]
   alerts: BMSAlert[]
+  addAlert: (alert: BMSAlert) => void
 }
 
-const BMSContext = createContext<BMSContextValue>({ data: null, history: [], alerts: [] })
+const BMSContext = createContext<BMSContextValue>({ data: null, history: [], alerts: [], addAlert: () => {} })
 
 export const useBMS = () => useContext(BMSContext)
 
