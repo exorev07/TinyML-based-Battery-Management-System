@@ -14,9 +14,13 @@ export default function OverviewPage() {
   const { data, alerts } = useBMS()
 
   const cutoff = Date.now() - 30_000
-  const recentCodes = new Set(alerts.filter(a => a.timestamp >= cutoff).map(a => a.code))
+  const recentAlerts = alerts.filter(a => a.timestamp >= cutoff)
+  const recentCodes = new Set(recentAlerts.map(a => a.code))
   const hasAlert = (code: string) => recentCodes.has(code)
   const isRelayConnected = !hasAlert('VOL-01') && !hasAlert('CUR-01') && !hasAlert('THM-01')
+  const disconnectCause = !isRelayConnected
+    ? alerts.filter(a => ['VOL-01', 'CUR-01', 'THM-01'].includes(a.code)).sort((a, b) => b.timestamp - a.timestamp)[0]
+    : null
 
   if (!data) return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh', fontFamily: fonts.body, color: colors.text.muted }}>
@@ -50,7 +54,7 @@ export default function OverviewPage() {
         {(() => {
           const isConn = isRelayConnected
           return (
-            <GlassCard style={{ display: 'flex', flexDirection: 'column' }}>
+            <GlassCard style={{ display: 'flex', flexDirection: 'column', paddingBottom: '2px' }}>
               {/* Header row with title + status badge */}
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '-10px' }}>
                 <h3 style={{
@@ -74,7 +78,7 @@ export default function OverviewPage() {
                 </div>
               </div>
               {/* Plug & Socket SVG */}
-              <div style={{ width: '100%', flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ width: '100%', flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', paddingTop: '16px' }}>
                 {(() => {
                   const fill = isConn ? colors.amethyst.light : colors.text.muted
                   const fillDark = isConn ? colors.amethyst.mid : 'rgba(75,85,99,0.8)'
@@ -118,6 +122,14 @@ export default function OverviewPage() {
                     </svg>
                   )
                 })()}
+              </div>
+              <div style={{ height: '36px', padding: '0 4px 4px', textAlign: 'center', opacity: disconnectCause ? 1 : 0, transition: 'opacity 0.3s' }}>
+                <div style={{ fontFamily: fonts.body, fontSize: '12px', fontWeight: 500, color: colors.status.critical, lineHeight: 1.4 }}>
+                  {disconnectCause?.message ?? ''}
+                </div>
+                <div style={{ fontFamily: fonts.body, fontSize: '12px', fontWeight: 500, color: colors.text.muted, marginTop: '2px' }}>
+                  {disconnectCause ? new Date(disconnectCause.timestamp).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : ''}
+                </div>
               </div>
             </GlassCard>
           )
