@@ -111,7 +111,7 @@ export default function LogsPage() {
       <GlassCard style={{ padding: 0, overflow: 'hidden' }}>
         {/* Header */}
         <div style={{
-          display: 'grid', gridTemplateColumns: '110px 200px 140px 280px 1fr 340px', columnGap: '20px',
+          display: 'grid', gridTemplateColumns: '100px 110px 100px 160px 1fr 220px', columnGap: '16px',
           padding: '12px 24px', borderBottom: '1px solid rgba(255,255,255,0.06)',
           background: 'rgba(255,255,255,0.02)',
         }}>
@@ -134,7 +134,7 @@ export default function LogsPage() {
             </div>
           ) : filtered.map((alert) => (
             <div key={alert.id} style={{
-              display: 'grid', gridTemplateColumns: '110px 200px 140px 280px 1fr 340px', columnGap: '20px',
+              display: 'grid', gridTemplateColumns: '100px 110px 100px 160px 1fr 220px', columnGap: '16px',
               padding: '10px 24px', borderBottom: '1px solid rgba(255,255,255,0.03)',
               transition: 'background 0.15s',
             }}

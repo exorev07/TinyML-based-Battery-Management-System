@@ -51,9 +51,8 @@ export function TemperatureChart() {
   }, [data])
 
   return (
-    <div style={{ width: '100%', height: '100%', minHeight: 'clamp(180px, 20vh, 280px)', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', paddingTop: '4px' }}>
-      <div style={{ width: '100%', height: 'clamp(220px, 24vh, 340px)' }}>
-        <ResponsiveContainer>
+    <div style={{ width: '100%', flex: 1, minHeight: 0, minWidth: 0 }}>
+      <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={points} margin={{ top: 8, right: 28, bottom: 10, left: -16 }}>
             <defs>
               <linearGradient id="ambGrad" x1="0" y1="0" x2="0" y2="1">
@@ -91,12 +90,6 @@ export function TemperatureChart() {
             <Area type="monotone" dataKey="pack" stroke={chartColors.secondary} strokeWidth={2} fill="url(#packGrad)" dot={false} name="Pack" />
           </AreaChart>
         </ResponsiveContainer>
-      </div>
-      {data && (
-        <div style={{ textAlign: 'center', fontFamily: fonts.mono, fontSize: '12px', color: colors.text.primary, marginTop: '8px' }}>
-          {data.ambientTemp.toFixed(1)}°C ambient &nbsp;·&nbsp; {data.packTemp.toFixed(1)}°C pack
-        </div>
-      )}
     </div>
   )
 }

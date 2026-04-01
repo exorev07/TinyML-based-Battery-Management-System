@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState } from 'react'
 import { EmailAuthProvider, reauthenticateWithCredential } from 'firebase/auth'
 import { auth } from '../../lib/firebase'
-import { Gauge, Zap, Heart, Thermometer, Droplets, Wind, Activity, Bolt, RotateCw, Power } from 'lucide-react'
+import { Gauge, Zap, Heart, Thermometer, Droplets, Wind, Activity, Bolt, RotateCw, Power, PlugZap } from 'lucide-react'
 import { useBMS } from '../../components/dashboard/DashboardLayout'
 import { GlassCard } from '../../components/dashboard/GlassCard'
 import { RadialGauge } from '../../components/dashboard/RadialGauge'
@@ -14,37 +14,17 @@ import { TemperatureChart } from '../../components/dashboard/charts/TemperatureC
 import { fonts, colors, chartColors, glassCard } from '../../lib/styles'
 
 export default function OverviewPage() {
-  const { data, alerts, addAlert, updateAlertActionsForIds } = useBMS()
-  const [relayOverride, setRelayOverride] = useState<boolean>(true)
-  const [disconnectCause, setDisconnectCause] = useState<{ code?: string; message: string; timestamp: number } | null>(null)
-  const relayLatchedRef = useRef(false)
+  const { data, alerts, addAlert, relayOverride, setRelayOverride, disconnectCause, setDisconnectCause, relayLatchedRef } = useBMS()
   const [showRelayModal, setShowRelayModal] = useState(false)
   const [relayPassword, setRelayPassword] = useState('')
   const [relayAuthError, setRelayAuthError] = useState('')
   const [relayLoading, setRelayLoading] = useState(false)
 
-  const cutoff = Date.now() - 30_000
-  const recentAlerts = alerts.filter(a => a.timestamp >= cutoff)
-  const recentCodes = new Set(recentAlerts.map(a => a.code))
-  const hasAlert = (code: string) => recentCodes.has(code)
-  const alertTriggered = hasAlert('VOL-01') || hasAlert('CUR-01') || hasAlert('THM-01')
-
   const isRelayConnected = relayOverride
 
-  // Latch: once an alert triggers disconnect, stay disconnected until manual reset via password
-  // Only fires on actual transition (connected → disconnected), so RLY-01 is logged exactly once
-  useEffect(() => {
-    if (alertTriggered && !relayLatchedRef.current) {
-      relayLatchedRef.current = true
-      const causes = alerts.filter(a => ['VOL-01', 'CUR-01', 'THM-01'].includes(a.code))
-      const primary = causes.sort((a, b) => b.timestamp - a.timestamp)[0]
-      setRelayOverride(false)
-      if (causes.length > 0) {
-        setDisconnectCause({ code: primary.code, message: primary.message, timestamp: primary.timestamp })
-        updateAlertActionsForIds(causes.map(c => c.id), 'Relay Disconnected')
-      }
-    }
-  }, [alertTriggered])
+  const cutoff = Date.now() - 30_000
+  const recentCodes = new Set(alerts.filter(a => a.timestamp >= cutoff).map(a => a.code))
+  const hasAlert = (code: string) => recentCodes.has(code)
 
   const openRelayModal = () => {
     setRelayPassword('')
@@ -118,13 +98,21 @@ export default function OverviewPage() {
           return (
             <GlassCard style={{ display: 'flex', flexDirection: 'column', paddingBottom: '12px' }}>
               {/* Header row with title + status badge */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '-10px' }}>
-                <h3 style={{
-                  fontFamily: fonts.body, fontSize: '13px', fontWeight: 600,
-                  color: colors.text.muted, letterSpacing: '0.06em', textTransform: 'uppercase', margin: 0,
-                }}>
-                  Relay Status
-                </h3>
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '-10px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                  <h3 style={{
+                    fontFamily: fonts.body, fontSize: '13px', fontWeight: 600,
+                    color: colors.text.muted, letterSpacing: '0.06em', textTransform: 'uppercase', margin: 0,
+                  }}>
+                    Relay Status
+                  </h3>
+                  <span style={{
+                    fontFamily: fonts.mono, fontSize: '11px', color: colors.text.muted,
+                    opacity: disconnectCause ? 1 : 0, transition: 'opacity 0.3s',
+                  }}>
+                    {disconnectCause ? new Date(disconnectCause.timestamp).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : ''}
+                  </span>
+                </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <div style={{
                     display: 'flex', alignItems: 'center', gap: '6px',
@@ -208,9 +196,6 @@ export default function OverviewPage() {
                 )}
                 <span style={{ fontFamily: fonts.body, fontSize: '12px', fontWeight: 500, color: colors.status.critical }}>
                   {disconnectCause?.message ?? ''}
-                </span>
-                <span style={{ fontFamily: fonts.mono, fontSize: '11px', color: colors.text.muted }}>
-                  {disconnectCause ? new Date(disconnectCause.timestamp).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : ''}
                 </span>
               </div>
             </GlassCard>
@@ -322,17 +307,18 @@ export default function OverviewPage() {
         />
         <StatCard
           label="Pack Power"
-          value={(data.power / 1000).toFixed(1)}
-          unit="kW"
-          subtext={`${data.voltage.toFixed(1)}V · ${data.current.toFixed(1)}A`}
+          value={data.isCharging ? 'Charging' : (data.power / 1000).toFixed(1)}
+          unit={data.isCharging ? undefined : 'kW'}
+          subtext={data.isCharging ? 'N/A' : `${data.voltage.toFixed(1)}V · ${data.current.toFixed(1)}A`}
           icon={Zap}
           color={chartColors.primary}
         />
         <StatCard
-          label="Charging Status"
-          value={data.isCharging ? 'CHARGING' : 'IDLE'}
-          subtext={data.isCharging ? `${(data.power / 1000).toFixed(1)} kW` : 'Not charging'}
-          icon={Zap}
+          label="Port Status"
+          value={data.isCharging ? (data.power / 1000).toFixed(1) : '—'}
+          unit={data.isCharging ? 'kW' : undefined}
+          subtext={data.isCharging ? 'Plugged In' : 'Unplugged'}
+          icon={PlugZap}
           color={data.isCharging ? colors.status.nominal : colors.text.muted}
         />
       </div>
@@ -354,7 +340,7 @@ export default function OverviewPage() {
         <GlassCard>
           <MiniAlertPanel alerts={alerts} />
         </GlassCard>
-        <GlassCard title="Battery & Ambient Temp" headerRight={
+        <GlassCard title="Battery & Ambient Temp" style={{ display: 'flex', flexDirection: 'column' }} headerRight={
           <div style={{ display: 'flex', gap: '14px' }}>
             {[{ label: 'Ambient', color: '#7947BD' }, { label: 'Pack', color: '#b18ddd' }].map(({ label, color }) => (
               <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
@@ -364,7 +350,12 @@ export default function OverviewPage() {
             ))}
           </div>
         }>
-          <TemperatureChart />
+          <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+            <TemperatureChart />
+            <div style={{ textAlign: 'center', fontFamily: fonts.mono, fontSize: '12px', color: colors.text.primary, marginTop: '8px' }}>
+              {data.ambientTemp.toFixed(1)}°C ambient &nbsp;·&nbsp; {data.packTemp.toFixed(1)}°C pack
+            </div>
+          </div>
         </GlassCard>
       </div>
 
