@@ -37,6 +37,7 @@ export default function OverviewPage() {
     if (!wantConnect) {
       // Disconnecting — no password needed
       const ts = Date.now()
+      relayLatchedRef.current = true
       setRelayOverride(false)
       setDisconnectCause({ message: 'Manually Disconnected', timestamp: ts })
       addAlert({ id: `rly-${ts}`, code: 'RLY-01', message: 'Relay manually disconnected by operator', severity: 'ATTENTION_REQUIRED', timestamp: ts, action: 'Relay Disconnected' })
@@ -147,20 +148,21 @@ export default function OverviewPage() {
                 {(() => {
                   const fill = isConn ? colors.amethyst.light : colors.text.muted
                   const fillDark = isConn ? colors.amethyst.mid : 'rgba(75,85,99,0.8)'
-                  const op = isConn ? 1 : 0.4
+                  const op = 1
                   const tr = { transition: 'fill 0.6s, opacity 0.6s' }
                   // All coords on a 200x100 canvas, centered at y=50
                   return (
-                    <svg width="240" height="120" viewBox="0 0 220 100">
+                    <svg width="240" height="120" viewBox="0 0 220 100" style={{ display: 'block', margin: '0 auto' }}>
+                      <g style={{ transition: 'transform 1s cubic-bezier(0.4,0,0.2,1)', transform: isConn ? 'translateX(-12px)' : 'translateX(0px)' }}>
                       {/* === WIRES (behind everything) === */}
-                      <g style={{ transition: 'transform 1s cubic-bezier(0.4,0,0.2,1)', transform: isConn ? 'translateX(44px)' : 'translateX(0px)' }}>
+                      <g style={{ transition: 'transform 1s cubic-bezier(0.4,0,0.2,1)', transform: isConn ? 'translateX(44px)' : 'translateX(18px)' }}>
                         <rect x="2" y="44" width="24" height="12" rx="6" fill={fill} opacity={op * 0.65} style={tr} />
                       </g>
                       <g style={{ transition: 'transform 1s cubic-bezier(0.4,0,0.2,1)', transform: 'translateX(0px)' }}>
                         <rect x="174" y="44" width="24" height="12" rx="6" fill={fill} opacity={op * 0.65} style={tr} />
                       </g>
                       {/* === PLUG (left side) === */}
-                      <g style={{ transition: 'transform 1s cubic-bezier(0.4,0,0.2,1)', transform: isConn ? 'translateX(44px)' : 'translateX(0px)' }}>
+                      <g style={{ transition: 'transform 1s cubic-bezier(0.4,0,0.2,1)', transform: isConn ? 'translateX(44px)' : 'translateX(18px)' }}>
                         {/* Body: flat right edge, rounded left */}
                         <path d="M72,22 L72,78 L52,78 C34,78 22,66 22,50 C22,34 34,22 52,22 Z"
                           fill={fill} opacity={op} style={tr} />
@@ -184,6 +186,7 @@ export default function OverviewPage() {
                         <ellipse cx="108" cy="50" rx="8" ry="16"
                           fill="rgba(177,141,221,0.2)" style={{ filter: 'blur(5px)' }} />
                       )}
+                      </g>
                     </svg>
                   )
                 })()}
