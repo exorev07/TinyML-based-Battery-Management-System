@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { AlertTriangle, Download, Filter, CalendarDays, ChevronLeft, ChevronRight, X } from 'lucide-react'
+import { AlertTriangle, Download, ChevronLeft, ChevronRight, X } from 'lucide-react'
 import { useBMS } from '../../components/dashboard/DashboardLayout'
 import { GlassCard } from '../../components/dashboard/GlassCard'
 import { fonts, colors } from '../../lib/styles'
@@ -157,7 +157,6 @@ export default function LogsPage() {
                 whiteSpace: 'nowrap',
               }}
             >
-              <CalendarDays size={13} />
               {dateLabel}
               {dateFrom && (
                 <span
@@ -289,8 +288,7 @@ export default function LogsPage() {
         </div>
 
         {/* 3: Search */}
-        <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Filter size={14} color={colors.text.muted} />
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
           <input
             type="text"
             placeholder="Search by code or message..."
