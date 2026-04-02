@@ -21,7 +21,6 @@ const navItems = [
   { label: 'Overview', icon: LayoutDashboard, path: '/dashboard/overview' },
   { label: 'Analytics', icon: BarChart3, path: '/dashboard/analytics' },
   { label: 'Logs', icon: ScrollText, path: '/dashboard/logs' },
-  { label: 'Settings', icon: SettingsIcon, path: '/dashboard/settings' },
 ]
 
 interface SidebarProps {
@@ -175,6 +174,37 @@ export function Sidebar({ status }: SidebarProps) {
 
       {/* Bottom section */}
       <div style={{ padding: '12px 8px', borderTop: '1px solid rgba(255,255,255,0.06)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+        {/* Settings button */}
+        {(() => {
+          const active = location.pathname === '/dashboard/settings'
+          const hovered = hoveredItem === 'settings'
+          return (
+            <button
+              onClick={() => navigate('/dashboard/settings')}
+              onMouseEnter={() => setHoveredItem('settings')}
+              onMouseLeave={() => setHoveredItem(null)}
+              style={{
+                display: 'flex', alignItems: 'center', gap: '12px',
+                padding: collapsed ? '12px 0' : '12px 14px',
+                justifyContent: collapsed ? 'center' : 'flex-start',
+                borderRadius: '10px', border: 'none', cursor: 'pointer',
+                background: active ? 'rgba(121,71,189,0.15)' : hovered ? 'rgba(255,255,255,0.04)' : 'transparent',
+                transition: 'background 0.2s', width: '100%',
+              }}
+            >
+              <SettingsIcon size={20} color={active ? colors.amethyst.light : colors.text.muted} strokeWidth={active ? 2.2 : 1.8} />
+              {!collapsed && (
+                <span style={{
+                  fontFamily: fonts.body, fontSize: '14px', fontWeight: active ? 600 : 400,
+                  color: active ? colors.amethyst.light : hovered ? colors.text.secondary : colors.text.muted,
+                  whiteSpace: 'nowrap',
+                }}>
+                  Settings
+                </span>
+              )}
+            </button>
+          )
+        })()}
         {/* Info button */}
         <button
           onClick={() => openInfo()}
