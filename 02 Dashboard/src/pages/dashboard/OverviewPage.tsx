@@ -13,6 +13,30 @@ import { RangeSocChart } from '../../components/dashboard/charts/RangeSocChart'
 import { TemperatureChart } from '../../components/dashboard/charts/TemperatureChart'
 import { fonts, colors, chartColors, glassCard } from '../../lib/styles'
 
+function TipIconBox({ icon: Icon, tooltip }: { icon: React.ElementType; tooltip: string }) {
+  const [show, setShow] = useState(false)
+  return (
+    <div style={{ position: 'relative' }} onMouseEnter={() => setShow(true)} onMouseLeave={() => setShow(false)}>
+      <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'default' }}>
+        <Icon size={16} color={colors.text.muted} />
+      </div>
+      {show && (
+        <div style={{
+          position: 'absolute', bottom: 'calc(100% + 10px)', right: 0, width: '210px',
+          padding: '10px 13px', background: 'rgba(10,8,16,0.94)',
+          backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
+          border: '1px solid rgba(141,110,179,0.28)', borderRadius: '10px',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.55), 0 0 0 1px rgba(141,110,179,0.06)',
+          fontFamily: fonts.body, fontSize: '12px', color: colors.text.secondary,
+          lineHeight: 1.55, zIndex: 50, pointerEvents: 'none', textAlign: 'justify',
+        }}>
+          {tooltip}
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function OverviewPage() {
   const { data, alerts, addAlert, relayOverride, setRelayOverride, disconnectCause, setDisconnectCause, relayLatchedRef } = useBMS()
   const [showRelayModal, setShowRelayModal] = useState(false)
@@ -208,13 +232,13 @@ export default function OverviewPage() {
 
       {/* === Row 2: Charts === */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 0.65fr', gap: 'clamp(12px, 1vw, 16px)' }}>
-        <GlassCard title="State of Charge" headerRight={<div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><BatteryCharging size={16} color={colors.text.muted} /></div>}>
+        <GlassCard title="State of Charge" headerRight={<TipIconBox icon={BatteryCharging} tooltip="How much charge is left in the battery right now - shown as a percentage of the full capacity." />}>
           <SocTimeChart />
           <div style={{ textAlign: 'center', fontFamily: fonts.mono, fontSize: '12px', color: colors.text.primary, marginTop: '8px' }}>
             {data.soc.toFixed(1)}%
           </div>
         </GlassCard>
-        <GlassCard title="Estimated Range" headerRight={<div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Navigation size={16} color={colors.text.muted} /></div>}>
+        <GlassCard title="Estimated Range" headerRight={<TipIconBox icon={Navigation} tooltip="How far the car can travel based on the current state of charge - estimated from recent driving behavior, energy usage and environmental factors." />}>
           <RangeSocChart />
           <div style={{ textAlign: 'center', fontFamily: fonts.mono, fontSize: '12px', color: colors.text.primary, marginTop: '8px' }}>
             {data.remainingRangeKm.toFixed(0)} km &nbsp;·&nbsp; ~{data.remainingTimeMinutes} min
@@ -299,6 +323,7 @@ export default function OverviewPage() {
           subtext={`Cycle degradation: ${data.soh < 70 ? 'High' : 'Normal'}`}
           icon={Heart}
           color={data.soh < 70 ? colors.status.warning : colors.status.nominal}
+          tooltip="A measure of the battery's overall condition compared to when it was new. 100% means perfect - the closer it gets to 0%, the more the battery has degraded over time."
         />
         <StatCard
           label="Remaining Useful Life"
@@ -307,6 +332,7 @@ export default function OverviewPage() {
           subtext={`${data.rulDays} days remaining`}
           icon={RotateCw}
           color={data.rulCycles < 400 ? colors.status.warning : colors.status.nominal}
+          tooltip="An estimate of how many more full charge-discharge cycles the battery can handle before it needs replacing. One cycle = charging from empty to full once."
         />
         <StatCard
           label="Pack Power"
