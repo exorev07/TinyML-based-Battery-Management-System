@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { EmailAuthProvider, reauthenticateWithCredential } from 'firebase/auth'
 import { auth } from '../../lib/firebase'
-import { Gauge, Zap, Heart, Thermometer, Droplets, Wind, Activity, Bolt, RotateCw, Power, PlugZap, BatteryCharging, Navigation, Cpu } from 'lucide-react'
+import { Gauge, Zap, Heart, Thermometer, Droplets, Wind, Activity, Bolt, RotateCw, Power, PlugZap, BatteryCharging, Navigation, Cpu, AlertTriangle } from 'lucide-react'
 import { useBMS } from '../../components/dashboard/DashboardLayout'
 import { GlassCard } from '../../components/dashboard/GlassCard'
 import { RadialGauge } from '../../components/dashboard/RadialGauge'
@@ -167,14 +167,20 @@ export default function OverviewPage() {
                     onClick={openRelayModal}
                     style={{
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      width: '24px', height: '24px', borderRadius: '6px', cursor: 'pointer',
-                      background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(141,110,179,0.25)',
-                      transition: 'background 0.2s',
+                      width: '32px', height: '32px', borderRadius: '8px', cursor: 'pointer',
+                      background: 'rgba(121,71,189,0.12)', border: '1px solid rgba(141,110,179,0.35)',
+                      transition: 'background 0.2s, border-color 0.2s',
                     }}
-                    onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.1)')}
-                    onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.05)')}
+                    onMouseEnter={e => {
+                      e.currentTarget.style.background = 'rgba(121,71,189,0.22)'
+                      e.currentTarget.style.borderColor = 'rgba(141,110,179,0.6)'
+                    }}
+                    onMouseLeave={e => {
+                      e.currentTarget.style.background = 'rgba(121,71,189,0.12)'
+                      e.currentTarget.style.borderColor = 'rgba(141,110,179,0.35)'
+                    }}
                   >
-                    <Power size={12} color={colors.text.muted} />
+                    <Power size={15} color={colors.amethyst.light} />
                   </button>
                 </div>
               </div>
@@ -225,6 +231,9 @@ export default function OverviewPage() {
                     </svg>
                   )
                 })()}
+              </div>
+              <div style={{ opacity: disconnectCause ? 1 : 0, transition: 'opacity 0.3s' }}>
+                <div style={{ height: '1px', background: 'rgba(255,255,255,0.06)', margin: '0 4px 8px' }} />
               </div>
               <div style={{ height: '24px', padding: '0 4px 4px', textAlign: 'center', opacity: disconnectCause ? 1 : 0, transition: 'opacity 0.3s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
                 {disconnectCause?.code && (
@@ -423,14 +432,22 @@ export default function OverviewPage() {
               animation: 'modalFadeIn 0.3s cubic-bezier(0.22,1,0.36,1)',
             }}
           >
-            <h3 style={{
-              fontFamily: fonts.heading, fontSize: '22px', fontWeight: 400,
-              background: 'linear-gradient(135deg, #ffffff 0%, #b18ddd 100%)',
-              WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-              margin: '0 0 8px', letterSpacing: '-0.01em',
-            }}>
-              {isRelayConnected ? 'Disconnect Relay' : 'Reconnect Relay'}
-            </h3>
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '8px' }}>
+              <h3 style={{
+                fontFamily: fonts.heading, fontSize: '22px', fontWeight: 400,
+                color: colors.amethyst.light,
+                margin: 0, letterSpacing: '-0.01em',
+              }}>
+                {isRelayConnected ? 'Disconnect Relay' : 'Reconnect Relay'}
+              </h3>
+              <div style={{
+                width: '32px', height: '32px', borderRadius: '8px', flexShrink: 0,
+                background: 'rgba(255,255,255,0.05)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <AlertTriangle size={16} color={colors.text.muted} />
+              </div>
+            </div>
             <p style={{
               fontFamily: fonts.body, fontSize: '13px', color: colors.text.secondary,
               margin: '0 0 24px', lineHeight: 1.6, letterSpacing: '0.01em',
