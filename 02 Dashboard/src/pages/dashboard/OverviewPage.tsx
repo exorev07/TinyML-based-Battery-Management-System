@@ -13,7 +13,7 @@ import { RangeSocChart } from '../../components/dashboard/charts/RangeSocChart'
 import { TemperatureChart } from '../../components/dashboard/charts/TemperatureChart'
 import { fonts, colors, chartColors, glassCard } from '../../lib/styles'
 
-function TipIconBox({ icon: Icon, tooltip }: { icon: React.ElementType; tooltip: string }) {
+function TipIconBox({ icon: Icon, tooltip, tipWidth = '210px' }: { icon: React.ElementType; tooltip: string; tipWidth?: string }) {
   const [show, setShow] = useState(false)
   return (
     <div style={{ position: 'relative' }} onMouseEnter={() => setShow(true)} onMouseLeave={() => setShow(false)}>
@@ -22,7 +22,7 @@ function TipIconBox({ icon: Icon, tooltip }: { icon: React.ElementType; tooltip:
       </div>
       {show && (
         <div style={{
-          position: 'absolute', bottom: 'calc(100% + 10px)', right: 0, width: '210px',
+          position: 'absolute', bottom: 'calc(100% + 10px)', right: 0, width: tipWidth,
           padding: '10px 13px', background: 'rgba(10,8,16,0.94)',
           backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
           border: '1px solid rgba(141,110,179,0.28)', borderRadius: '10px',
@@ -245,7 +245,7 @@ export default function OverviewPage() {
           </div>
         </GlassCard>
         <GlassCard style={{ display: 'flex', flexDirection: 'column' }}>
-          {/* Header row with title + status badge */}
+          {/* Header row with title + status badge + info icon */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
             <h3 style={{
               fontFamily: fonts.body, fontSize: '13px', fontWeight: 600,
@@ -253,18 +253,21 @@ export default function OverviewPage() {
             }}>
               Fan Status
             </h3>
-            <div style={{
-              display: 'flex', alignItems: 'center', gap: '6px',
-              padding: '4px 10px', borderRadius: '20px',
-              background: data.fanStatus ? 'rgba(52,211,153,0.08)' : 'rgba(255,255,255,0.04)',
-              border: `1px solid ${data.fanStatus ? 'rgba(52,211,153,0.25)' : 'rgba(255,255,255,0.08)'}`,
-            }}>
-              <span style={{
-                fontFamily: fonts.mono, fontSize: '10px', fontWeight: 600,
-                color: data.fanStatus ? colors.status.nominal : colors.text.muted,
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: '6px',
+                padding: '4px 10px', borderRadius: '20px',
+                background: data.fanStatus ? 'rgba(52,211,153,0.08)' : 'rgba(255,255,255,0.04)',
+                border: `1px solid ${data.fanStatus ? 'rgba(52,211,153,0.25)' : 'rgba(255,255,255,0.08)'}`,
               }}>
-                {data.fanStatus ? 'ACTIVE' : 'IDLE'}
-              </span>
+                <span style={{
+                  fontFamily: fonts.mono, fontSize: '10px', fontWeight: 600,
+                  color: data.fanStatus ? colors.status.nominal : colors.text.muted,
+                }}>
+                  {data.fanStatus ? 'ACTIVE' : 'IDLE'}
+                </span>
+              </div>
+              <TipIconBox icon={Wind} tooltip="The cooling fan activates automatically when pack temperature exceeds 35°C, helping dissipate heat and protect the battery. It stays on until the temperature drops back to a safe range." />
             </div>
           </div>
           {/* Fan area */}
@@ -354,7 +357,7 @@ export default function OverviewPage() {
 
       {/* === Row 4: Sensors + Alerts + Temperature === */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 2fr', gap: 'clamp(12px, 1vw, 16px)' }}>
-        <GlassCard title="Sensor Readings" headerRight={<div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Cpu size={16} color={colors.text.muted} /></div>}>
+        <GlassCard title="Sensor Readings" headerRight={<TipIconBox icon={Cpu} tipWidth="260px" tooltip="Live readings from the vehicles onboard sensors - highlighted in red when a value exceeds safe thresholds." />}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
             <SensorTile label="Voltage" value={data.voltage.toFixed(1)} unit="V" icon={Bolt} alert={hasAlert('VOL-01')} />
             <SensorTile label="Current" value={data.current.toFixed(1)} unit="A" icon={Activity} alert={hasAlert('CUR-01')} />
@@ -370,13 +373,14 @@ export default function OverviewPage() {
           <MiniAlertPanel alerts={alerts} />
         </GlassCard>
         <GlassCard title="Battery & Ambient Temp" style={{ display: 'flex', flexDirection: 'column' }} headerRight={
-          <div style={{ display: 'flex', gap: '14px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
             {[{ label: 'Ambient', color: '#7947BD' }, { label: 'Pack', color: '#b18ddd' }].map(({ label, color }) => (
               <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                 <div style={{ width: 10, height: 10, borderRadius: 2, background: color }} />
                 <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '11px', color: '#6b7280' }}>{label}</span>
               </div>
             ))}
+            <TipIconBox icon={Thermometer} tipWidth="280px" tooltip="Pack temp is the battery's internal heat - high temperatures accelerate degradation and can trigger the cooling fan to maintain temperature or relay disconnection when beyond safe limits, to protect the pack. Ambient temp is the environmental temperature, in and around the vehicle." />
           </div>
         }>
           <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
