@@ -10,8 +10,8 @@ const generateMockData = (prevData: BMSData | null): BMSData => {
   let current = prevData ? prevData.current + (Math.random() - 0.5) * 8 : 40
   // Heat generated proportional to current (I²R effect), cooled by fan above 35°C
   const load = prevData ? Math.abs(prevData.current) / 160 : 0  // 0–1 normalized
-  const fanCooling = prevData && prevData.packTemp > 35 ? 0.3 : 0
-  const heatGain = load * 0.8   // up to +0.8°C/tick at full load
+  const fanCooling = prevData && prevData.packTemp > 35 ? 0.6 : 0
+  const heatGain = load * 0.5   // up to +0.5°C/tick at full load
   const tempDrift = heatGain - fanCooling + (Math.random() - 0.5) * 0.3
   let temp = prevData ? prevData.packTemp + tempDrift : 25
   let ambientTemp = prevData ? prevData.ambientTemp + (Math.random() - 0.5) * 0.2 : 40
