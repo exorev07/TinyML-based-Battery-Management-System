@@ -98,14 +98,25 @@ export default function OverviewPage() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(16px, 1.5vw, 24px)', maxWidth: '1800px', margin: '0 auto', width: '100%' }}>
       {/* Page header */}
-      <div>
-        <h1 style={{ fontFamily: fonts.heading, fontSize: '24px', fontWeight: 600, color: colors.text.primary, margin: 0 }}>
-          Dashboard Overview
-        </h1>
-        <p style={{ fontFamily: fonts.body, fontSize: '13px', color: colors.text.muted, marginTop: '4px' }}>
-          Live telemetry &middot; Updated every 2s
-        </p>
+      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
+        <div>
+          <h1 style={{ fontFamily: fonts.heading, fontSize: '24px', fontWeight: 600, color: colors.text.primary, margin: 0 }}>
+            Dashboard Overview
+          </h1>
+          <p style={{ fontFamily: fonts.body, fontSize: '13px', color: colors.text.muted, marginTop: '4px', marginBottom: 0 }}>
+            Live telemetry &middot; Updated every 2s
+          </p>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', paddingRight: '15px' }}>
+          <div style={{ width: '16px', height: '16px', borderRadius: '50%', border: `1px solid ${colors.amethyst.light}`, display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0.7, flexShrink: 0 }}>
+            <span style={{ fontFamily: fonts.mono, fontSize: '10px', fontWeight: 700, color: colors.amethyst.light, lineHeight: 1 }}>i</span>
+          </div>
+          <span style={{ fontFamily: fonts.body, fontSize: '12px', color: colors.amethyst.light, opacity: 0.7 }}>
+            Hover over card icons to learn more
+          </span>
+        </div>
       </div>
+
 
       {/* === Row 1: Vehicle Dynamics + Relay Status === */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 'clamp(12px, 1vw, 16px)' }}>
