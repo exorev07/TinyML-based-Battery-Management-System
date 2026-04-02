@@ -481,9 +481,6 @@ export default function OverviewPage() {
                   Password
                 </label>
                 <div style={{ position: 'relative' }}>
-                  <style>{`
-                    .relay-pwd-input[type="password"]:not(:placeholder-shown) { font-size: 18px !important; letter-spacing: 1px !important; line-height: 1 !important; }
-                  `}</style>
                   <input
                     className="relay-pwd-input"
                     type={showRelayPassword ? 'text' : 'password'}

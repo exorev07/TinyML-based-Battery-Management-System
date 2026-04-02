@@ -64,6 +64,8 @@ body {
 }
 
 /* ── Glow animation ── */
+.relay-pwd-input[type="password"]:not(:placeholder-shown) { font-size: 18px !important; letter-spacing: 1px !important; line-height: 1 !important; }
+
 @keyframes modalFadeIn {
   from { opacity: 0; transform: scale(0.95) translateY(8px); }
   to { opacity: 1; transform: scale(1) translateY(0); }
