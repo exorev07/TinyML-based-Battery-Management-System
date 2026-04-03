@@ -47,14 +47,23 @@ export function Navbar() {
 
         {/* Desktop CTA buttons */}
         <div className="hidden md:flex items-center gap-3" style={{ marginLeft: 'auto' }}>
-          <a
-            href="#demo"
-            onMouseEnter={() => setHoveredBtn('demo')}
-            onMouseLeave={() => setHoveredBtn(null)}
-            style={{ color: '#9ca3af', border: '2px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.07)', backdropFilter: 'blur(8px)', borderRadius: '15px', padding: '6px 16px', fontSize: '14px', fontWeight: 600, textDecoration: 'none', transition: 'box-shadow 0.2s, transform 0.2s', boxShadow: hoveredBtn === 'demo' ? '0 0 24px rgba(121,71,189,0.65)' : 'none', transform: hoveredBtn === 'demo' ? 'translateY(-2px)' : 'translateY(0)' }}
-          >
-            Demo
-          </a>
+          <div style={{ position: 'relative' }}>
+            <a
+              href="/auth?demo=true"
+              onMouseEnter={() => setHoveredBtn('demo')}
+              onMouseLeave={() => setHoveredBtn(null)}
+              style={{ color: '#9ca3af', border: '2px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.07)', backdropFilter: 'blur(8px)', borderRadius: '15px', padding: '6px 16px', fontSize: '14px', fontWeight: 600, textDecoration: 'none', transition: 'box-shadow 0.2s, transform 0.2s', boxShadow: hoveredBtn === 'demo' ? '0 0 24px rgba(121,71,189,0.65)' : 'none', transform: hoveredBtn === 'demo' ? 'translateY(-2px)' : 'translateY(0)', display: 'inline-block' }}
+            >
+              Demo
+            </a>
+            {hoveredBtn === 'demo' && (
+              <div style={{ position: 'absolute', top: 'calc(100% + 10px)', right: 0, width: '240px', background: 'rgba(10,8,16,0.94)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', border: '1px solid rgba(141,110,179,0.28)', borderRadius: '10px', padding: '10px 12px', zIndex: 100, pointerEvents: 'none' }}>
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '12px', color: '#9ca3af', lineHeight: 1.5, textAlign: 'justify', margin: 0 }}>
+                  Try CyphEV without signing up. The demo account gives you full access to the dashboard with simulated battery & sensor data so you can explore all features and dashboard functionality freely.
+                </p>
+              </div>
+            )}
+          </div>
           <a
             href="/auth"
             onMouseEnter={() => setHoveredBtn('getstarted')}
@@ -89,7 +98,7 @@ export function Navbar() {
             </a>
           ))}
           <div className="flex gap-3 mt-3 pt-3 border-t border-white/[0.06]">
-            <a href="#demo" className="flex-1 text-center px-4 py-2.5 text-sm text-gray-300 border border-white/[0.1] rounded-lg">
+            <a href="/auth?demo=true" className="flex-1 text-center px-4 py-2.5 text-sm text-gray-300 border border-white/[0.1] rounded-lg">
               Demo
             </a>
             <a href="/auth" className="flex-1 text-center px-4 py-2.5 text-sm font-medium text-surface-900 bg-white rounded-lg">

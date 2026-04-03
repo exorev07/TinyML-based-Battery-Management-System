@@ -3,7 +3,10 @@ import { useNavigate } from 'react-router-dom'
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, sendPasswordResetEmail, confirmPasswordReset, sendEmailVerification, applyActionCode, signOut } from 'firebase/auth'
 import { auth } from '../lib/firebase'
 import carImage from '../assets/Audi_RS5_Auth.png'
-import { Eye, EyeOff } from 'lucide-react'
+import { Eye, EyeOff, Copy, Check, X } from 'lucide-react'
+
+const DEMO_EMAIL = 'demo@cyphev.app'
+const DEMO_PASSWORD = 'DemoPass@123'
 
 export function AuthPage() {
   const [mode, setMode] = useState<'login' | 'register' | 'forgot' | 'reset'>('login')
@@ -21,10 +24,44 @@ export function AuthPage() {
   const verifyAttempted = useRef(false)
   const [showPassword, setShowPassword] = useState(false)
   const [showNewPassword, setShowNewPassword] = useState(false)
+  const [showDemoModal, setShowDemoModal] = useState(false)
+  const [copiedField, setCopiedField] = useState<'email' | 'password' | null>(null)
+  const [isDemoMode, setIsDemoMode] = useState(false)
+  const [showDemoForgotTip, setShowDemoForgotTip] = useState(false)
+  const [showDemoSignupTip, setShowDemoSignupTip] = useState(false)
   const navigate = useNavigate()
+
+  const handleCopy = async (field: 'email' | 'password') => {
+    await navigator.clipboard.writeText(field === 'email' ? DEMO_EMAIL : DEMO_PASSWORD)
+    setCopiedField(field)
+    setTimeout(() => setCopiedField(null), 2000)
+  }
+
+  useEffect(() => {
+    if (!showDemoForgotTip) return
+    const timer = setTimeout(() => setShowDemoForgotTip(false), 3000)
+    const dismiss = () => setShowDemoForgotTip(false)
+    const attachTimer = setTimeout(() => document.addEventListener('click', dismiss), 0)
+    return () => { clearTimeout(timer); clearTimeout(attachTimer); document.removeEventListener('click', dismiss) }
+  }, [showDemoForgotTip])
+
+  useEffect(() => {
+    if (!showDemoSignupTip) return
+    const timer = setTimeout(() => setShowDemoSignupTip(false), 3000)
+    const dismiss = () => setShowDemoSignupTip(false)
+    const attachTimer = setTimeout(() => document.addEventListener('click', dismiss), 0)
+    return () => { clearTimeout(timer); clearTimeout(attachTimer); document.removeEventListener('click', dismiss) }
+  }, [showDemoSignupTip])
+
+  const handleDemoAutofill = () => {
+    setFormData(fd => ({ ...fd, email: DEMO_EMAIL, password: DEMO_PASSWORD }))
+    setMode('login')
+    setShowDemoModal(false)
+  }
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
+    if (params.get('demo') === 'true') setIsDemoMode(true)
     const urlMode = params.get('mode')
     const code = params.get('oobCode')
     if (urlMode === 'resetPassword' && code) {
@@ -75,7 +112,7 @@ export function AuthPage() {
     return () => clearTimeout(t)
   }, [countdown, navigate, verifySent, resetSent])
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault()
     setError(null)
     if (mode === 'login' && !formData.email) return setError('Please enter your email.')
@@ -109,7 +146,7 @@ export function AuthPage() {
       } else {
         const cred = await signInWithEmailAndPassword(auth, formData.email, formData.password)
         await cred.user.reload()
-        if (!cred.user.emailVerified) {
+        if (!cred.user.emailVerified && cred.user.email !== DEMO_EMAIL) {
           await signOut(auth)
           setError('Please verify your email before signing in. Check your inbox.')
           return
@@ -130,7 +167,7 @@ export function AuthPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px 80px', paddingTop: '140px', position: 'relative', overflow: 'hidden' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '140px 12.5% 24px', position: 'relative', overflow: 'hidden' }}>
 
       <style>{`
         @keyframes fadeSlideUp {
@@ -178,6 +215,7 @@ export function AuthPage() {
           WebkitTextFillColor: 'transparent',
           backgroundClip: 'text',
           textAlign: 'center',
+          width: '75%',
           animation: 'fadeSlideDown 0.7s cubic-bezier(0.22,1,0.36,1) 0.5s both',
         }}>
           You're clear for takeoff. Let's secure the ride.
@@ -188,7 +226,7 @@ export function AuthPage() {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '60px', width: '100%', maxWidth: '1400px' }}>
 
       {/* Left — Car image */}
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', maxWidth: '800px' }}>
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'flex-start', overflow: 'hidden', maxWidth: '1000px', marginLeft: '-60px', marginTop: '60px' }}>
         <img
           src={carImage}
           alt="Audi RS5"
@@ -203,6 +241,33 @@ export function AuthPage() {
 
       {/* Right — Auth form */}
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+
+        {/* Demo credentials button — only in demo mode */}
+        {isDemoMode && <div style={{ width: '420px', display: 'flex', justifyContent: 'flex-end', marginBottom: '12px', animation: 'fadeSlideFromRight 0.8s cubic-bezier(0.22,1,0.36,1) 1s both' }}>
+          <button
+            onClick={() => setShowDemoModal(true)}
+            onMouseEnter={() => setHoveredBtn('demo')}
+            onMouseLeave={() => setHoveredBtn(null)}
+            style={{
+              fontFamily: "'DM Sans', sans-serif",
+              fontSize: '13px',
+              fontWeight: 600,
+              color: hoveredBtn === 'demo' ? '#b18ddd' : '#9ca3af',
+              background: 'rgba(255,255,255,0.05)',
+              border: '1px solid rgba(141,110,179,0.4)',
+              borderRadius: '15px',
+              padding: '5px 16px',
+              cursor: 'pointer',
+              backdropFilter: 'blur(6px)',
+              WebkitBackdropFilter: 'blur(6px)',
+              transition: 'color 0.2s, box-shadow 0.2s, transform 0.2s',
+              boxShadow: hoveredBtn === 'demo' ? '0 0 18px rgba(121,71,189,0.4)' : 'none',
+              transform: hoveredBtn === 'demo' ? 'translateY(-2px)' : 'translateY(0)',
+            }}
+          >
+            Login Credentials
+          </button>
+        </div>}
 
         {/* Auth card */}
         <div style={{
@@ -320,14 +385,23 @@ export function AuthPage() {
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                         <label style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '13px', fontWeight: 500, color: '#9ca3af' }}>Password</label>
                         {mode === 'login' && (
-                          <span
-                            onClick={() => { setMode('forgot'); setError(null); setShowPassword(false); setVerifyDone(false) }}
-                            onMouseEnter={() => setHoveredBtn('forgot')}
-                            onMouseLeave={() => setHoveredBtn(null)}
-                            style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '12px', color: hoveredBtn === 'forgot' ? '#b18ddd' : '#6b7280', cursor: 'pointer', transition: 'color 0.2s' }}
-                          >
-                            Forgot password?
-                          </span>
+                          <div style={{ position: 'relative' }}>
+                            <span
+                              onClick={() => { if (isDemoMode) { setShowDemoForgotTip(v => !v); return } setMode('forgot'); setError(null); setShowPassword(false); setVerifyDone(false) }}
+                              onMouseEnter={() => setHoveredBtn('forgot')}
+                              onMouseLeave={() => setHoveredBtn(null)}
+                              style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '12px', color: hoveredBtn === 'forgot' ? '#b18ddd' : '#6b7280', cursor: isDemoMode ? 'default' : 'pointer', transition: 'color 0.2s' }}
+                            >
+                              Forgot password?
+                            </span>
+                            {showDemoForgotTip && (
+                              <div style={{ position: 'absolute', top: 'calc(100% + 8px)', right: 0, width: '220px', background: 'rgba(10,8,16,0.94)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', border: '1px solid rgba(141,110,179,0.28)', borderRadius: '10px', padding: '10px 12px', zIndex: 100, pointerEvents: 'none' }}>
+                                <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '12px', color: '#9ca3af', lineHeight: 1.5, textAlign: 'justify', margin: 0 }}>
+                                  Password reset functionality is not available in demo mode. Use the provided credentials to sign in.
+                                </p>
+                              </div>
+                            )}
+                          </div>
                         )}
                       </div>
                       <div style={{ position: 'relative' }}>
@@ -394,18 +468,25 @@ export function AuthPage() {
                 </div>
 
                 {/* Toggle mode */}
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '14px', color: '#6b7280', textAlign: 'center' }}>
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '14px', color: '#6b7280', textAlign: 'center', position: 'relative' }}>
                   {mode === 'forgot'
                     ? 'Remember your password? '
                     : mode === 'login' ? "Don't have an account? " : 'Already have an account? '}
                   <span
-                    onClick={() => { setMode(mode === 'register' ? 'login' : mode === 'forgot' ? 'login' : 'register'); setError(null); setFormData(fd => ({ ...fd, password: '' })); setShowPassword(false); setShowNewPassword(false); setVerifyDone(false) }}
+                    onClick={() => { if (isDemoMode && mode === 'login') { setShowDemoSignupTip(v => !v); return } setMode(mode === 'register' ? 'login' : mode === 'forgot' ? 'login' : 'register'); setError(null); setFormData(fd => ({ ...fd, password: '' })); setShowPassword(false); setShowNewPassword(false); setVerifyDone(false) }}
                     onMouseEnter={() => setHoveredBtn('toggle')}
                     onMouseLeave={() => setHoveredBtn(null)}
-                    style={{ color: '#b18ddd', cursor: 'pointer', fontWeight: 500, transition: 'color 0.2s' }}
+                    style={{ color: '#b18ddd', cursor: isDemoMode && mode === 'login' ? 'default' : 'pointer', fontWeight: 500, transition: 'color 0.2s' }}
                   >
                     {mode === 'login' ? 'Sign up' : 'Sign in'}
                   </span>
+                  {showDemoSignupTip && (
+                    <div style={{ position: 'absolute', bottom: 'calc(100% + 8px)', left: '50%', transform: 'translateX(-50%)', width: '220px', background: 'rgba(10,8,16,0.94)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', border: '1px solid rgba(141,110,179,0.28)', borderRadius: '10px', padding: '10px 12px', zIndex: 100, pointerEvents: 'none' }}>
+                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '12px', color: '#9ca3af', lineHeight: 1.5, textAlign: 'justify', margin: 0 }}>
+                        Sign up is not available in demo mode. Use the provided credentials to sign in with the demo account.
+                      </p>
+                    </div>
+                  )}
                 </p>
               </>
             )}
@@ -414,6 +495,93 @@ export function AuthPage() {
       </div>
       </div>
       </div>
+
+      {/* Demo credentials modal */}
+      {showDemoModal && (
+        <div
+          onClick={() => setShowDemoModal(false)}
+          style={{ position: 'fixed', inset: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)' }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              width: '380px',
+              borderRadius: '16px',
+              border: '1px solid rgba(141,110,179,0.58)',
+              background: 'rgba(12,10,18,0.92)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              boxShadow: '0 8px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.07)',
+              padding: '28px 28px 24px',
+            }}
+          >
+            {/* Header */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+              <span style={{ fontFamily: "'DM Serif Display', serif", fontSize: '18px', fontWeight: 600, color: '#b18ddd', letterSpacing: '0.03em' }}>Demo Account</span>
+              <button
+                onClick={() => setShowDemoModal(false)}
+                onMouseEnter={() => setHoveredBtn('demoClose')}
+                onMouseLeave={() => setHoveredBtn(null)}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: hoveredBtn === 'demoClose' ? '#ffffff' : '#6b7280', transition: 'color 0.2s', padding: '4px', display: 'flex' }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '13px', color: '#9ca3af', marginBottom: '24px', lineHeight: 1.4 }}>
+              Use these credentials to explore the dashboard.
+            </p>
+
+            {/* Credentials rows */}
+            {[
+              { label: 'Email', value: DEMO_EMAIL, field: 'email' as const },
+              { label: 'Password', value: DEMO_PASSWORD, field: 'password' as const },
+            ].map(({ label, value, field }) => (
+              <div key={field} style={{ marginBottom: '12px' }}>
+                <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '12px', fontWeight: 500, color: '#6b7280', marginBottom: '6px' }}>{label}</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', padding: '10px 14px' }}>
+                  <span style={{ flex: 1, fontFamily: "'JetBrains Mono', monospace", fontSize: '13px', color: '#ffffff', letterSpacing: '0.03em' }}>{value}</span>
+                  <button
+                    onClick={() => handleCopy(field)}
+                    onMouseEnter={() => setHoveredBtn(`copy-${field}`)}
+                    onMouseLeave={() => setHoveredBtn(null)}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: copiedField === field ? '#34d399' : hoveredBtn === `copy-${field}` ? '#b18ddd' : '#6b7280', transition: 'color 0.2s', padding: '2px', display: 'flex', flexShrink: 0 }}
+                  >
+                    {copiedField === field ? <Check size={15} /> : <Copy size={15} />}
+                  </button>
+                </div>
+              </div>
+            ))}
+
+            {/* Divider */}
+            <hr style={{ border: 'none', borderTop: '1px solid rgba(255,255,255,0.08)', margin: '20px 0 18px' }} />
+
+            {/* Auto-fill button */}
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <button
+                onClick={handleDemoAutofill}
+                onMouseEnter={() => setHoveredBtn('autofill')}
+                onMouseLeave={() => setHoveredBtn(null)}
+                style={{
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontSize: '14px',
+                  fontWeight: 600,
+                  color: hoveredBtn === 'autofill' ? '#ffffff' : '#08080a',
+                  background: hoveredBtn === 'autofill' ? '#b18ddd' : '#ffffff',
+                  border: 'none',
+                  borderRadius: '15px',
+                  padding: '8px 28px',
+                  cursor: 'pointer',
+                  transition: 'background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.2s',
+                  boxShadow: hoveredBtn === 'autofill' ? '0 0 24px rgba(121,71,189,0.65)' : 'none',
+                  transform: hoveredBtn === 'autofill' ? 'translateY(-2px)' : 'translateY(0)',
+                }}
+              >
+                Auto-fill Credentials
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Back to home — centered at bottom */}
       <div style={{ position: 'absolute', bottom: '32px', left: 0, right: 0, display: 'flex', justifyContent: 'center', animation: 'fadeSlideUp 0.6s cubic-bezier(0.22,1,0.36,1) 1.6s both' }}>
