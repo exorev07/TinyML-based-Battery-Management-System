@@ -1,6 +1,6 @@
 import { ArrowUpRight } from 'lucide-react'
 import { useState, useEffect } from 'react'
-import dashboardPreview from '../../assets/dashboard_preview.png'
+import dashboardPreview from '../../assets/dashboard_preview.gif'
 
 const phrases = [
   { before: 'Tired of constant ',    bold: 'Range Anxiety', after: '?' },

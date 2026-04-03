@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Menu, X } from 'lucide-react'
 
 const navLinks = [
@@ -13,9 +13,16 @@ export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [hoveredLink, setHoveredLink] = useState<string | null>(null)
   const [hoveredBtn, setHoveredBtn] = useState<string | null>(null)
+  const [scrolled, setScrolled] = useState(false)
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
   return (
-    <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50, background: 'rgba(8,8,10,0.35)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', animation: 'navFadeDown 0.6s cubic-bezier(0.22,1,0.36,1) 0.1s both' }}>
+    <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50, background: 'rgba(8,8,10,0.05)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', boxShadow: scrolled ? '0 8px 32px rgba(0,0,0,0.4)' : 'none', transition: 'box-shadow 0.3s', animation: 'navFadeDown 0.6s cubic-bezier(0.22,1,0.36,1) 0.1s both' }}>
       <style>{`@keyframes navFadeDown { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: translateY(0); } }`}</style>
 
       <div style={{ display: 'flex', alignItems: 'center', height: '64px', padding: '0 24px', width: '100%', position: 'relative', fontFamily: "'DM Sans', sans-serif" }}>
