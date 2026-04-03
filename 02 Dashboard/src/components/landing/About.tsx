@@ -97,7 +97,7 @@ export function About() {
       </div>
 
       {/* Divider */}
-      <hr style={{ border: 'none', borderTop: '1px solid rgba(255,255,255,0.26)', width: '100%', maxWidth: '1152px', margin: '60px auto 0' }} />
+      <hr style={{ border: 'none', borderTop: '1px solid rgba(255,255,255,0.26)', width: '100%', maxWidth: '75%', margin: '60px auto 0' }} />
     </section>
   )
 }

@@ -122,7 +122,7 @@ export function Hero() {
       </div>
 
       {/* Dashboard preview */}
-      <div id="product" style={{ position: 'relative', zIndex: 10, width: '100%', maxWidth: '1200px', padding: '0 24px', marginLeft: 'auto', marginRight: 'auto', scrollMarginTop: '100px', animation: 'heroFadeUp 0.8s cubic-bezier(0.22,1,0.36,1) 1s both' }}>
+      <div id="product" style={{ position: 'relative', zIndex: 10, width: '75%', padding: '0', marginLeft: 'auto', marginRight: 'auto', scrollMarginTop: '100px', animation: 'heroFadeUp 0.8s cubic-bezier(0.22,1,0.36,1) 1s both' }}>
         <div style={{ borderRadius: '12px', border: '1px solid rgba(121,71,189,0.3)', overflow: 'hidden', boxShadow: '0 20px 80px rgba(121,71,189,0.4), 0 8px 30px rgba(121,71,189,0.2)', background: '#09090c', position: 'relative' as const, zIndex: 2 }}>
           {/* Browser chrome */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', background: 'rgba(255,255,255,0.02)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
@@ -191,7 +191,7 @@ export function Hero() {
       </div>
 
       {/* Divider */}
-      <hr style={{ border: 'none', borderTop: '1px solid rgba(255,255,255,0.26)', width: '100%', maxWidth: '1152px', margin: '60px auto 0' }} />
+      <hr style={{ border: 'none', borderTop: '1px solid rgba(255,255,255,0.26)', width: '100%', maxWidth: '75%', margin: '60px auto 0' }} />
     </section>
   )
 }
