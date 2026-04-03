@@ -96,7 +96,10 @@ export function AuthPage() {
         setCountdown(10)
       } else if (mode === 'register') {
         const cred = await createUserWithEmailAndPassword(auth, formData.email, formData.password)
-        if (formData.name) await updateProfile(cred.user, { displayName: formData.name })
+        if (formData.name) {
+          await updateProfile(cred.user, { displayName: formData.name })
+          await cred.user.reload()
+        }
         await sendEmailVerification(cred.user)
         localStorage.setItem('cyphev_pending_email', formData.email)
         localStorage.setItem('cyphev_verify_sent', 'true')
