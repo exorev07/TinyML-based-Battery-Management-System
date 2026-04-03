@@ -136,7 +136,7 @@ export function Sidebar({ status }: SidebarProps) {
       })()}
 
       {/* Nav Items */}
-      <nav style={{ flex: 1, padding: '12px 8px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+      <nav style={{ flex: 1, padding: '12px 8px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
         {navItems.map((item) => {
           const active = location.pathname === item.path || (item.path === '/dashboard/overview' && location.pathname === '/dashboard')
           const hovered = hoveredItem === item.label
@@ -149,10 +149,10 @@ export function Sidebar({ status }: SidebarProps) {
               onMouseLeave={() => setHoveredItem(null)}
               style={{
                 display: 'flex', alignItems: 'center', gap: '12px',
-                padding: collapsed ? '12px 0' : '12px 14px',
+                padding: collapsed ? '9px 0' : '9px 14px',
                 justifyContent: collapsed ? 'center' : 'flex-start',
                 borderRadius: '10px', cursor: 'pointer',
-                border: active ? '1px solid rgba(177,141,221,0.35)' : '1px solid rgba(177,141,221,0.1)',
+                border: active ? '1px solid rgba(177,141,221,0.35)' : '1px solid rgba(177,141,221,0.18)',
                 background: active ? 'rgba(121,71,189,0.15)' : hovered ? 'rgba(255,255,255,0.04)' : 'transparent',
                 transition: 'background 0.2s',
                 width: '100%',
@@ -174,7 +174,7 @@ export function Sidebar({ status }: SidebarProps) {
       </nav>
 
       {/* Bottom section */}
-      <div style={{ padding: '12px 8px', borderTop: '1px solid rgba(255,255,255,0.06)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+      <div style={{ padding: '12px 8px', borderTop: '1px solid rgba(255,255,255,0.06)', display: 'flex', flexDirection: 'column', gap: '6px' }}>
         {/* Settings button */}
         {(() => {
           const active = location.pathname === '/dashboard/settings'
@@ -186,10 +186,10 @@ export function Sidebar({ status }: SidebarProps) {
               onMouseLeave={() => setHoveredItem(null)}
               style={{
                 display: 'flex', alignItems: 'center', gap: '12px',
-                padding: collapsed ? '12px 0' : '12px 14px',
+                padding: collapsed ? '9px 0' : '9px 14px',
                 justifyContent: collapsed ? 'center' : 'flex-start',
                 borderRadius: '10px', cursor: 'pointer',
-                border: active ? '1px solid rgba(177,141,221,0.35)' : '1px solid rgba(177,141,221,0.1)',
+                border: active ? '1px solid rgba(177,141,221,0.35)' : '1px solid rgba(177,141,221,0.18)',
                 background: active ? 'rgba(121,71,189,0.15)' : hovered ? 'rgba(255,255,255,0.04)' : 'transparent',
                 transition: 'background 0.2s', width: '100%',
               }}
@@ -214,10 +214,10 @@ export function Sidebar({ status }: SidebarProps) {
           onMouseLeave={() => setHoveredItem(null)}
           style={{
             display: 'flex', alignItems: 'center', gap: '12px',
-            padding: collapsed ? '10px 0' : '10px 14px',
+            padding: collapsed ? '8px 0' : '8px 14px',
             justifyContent: collapsed ? 'center' : 'flex-start',
             borderRadius: '10px', cursor: 'pointer',
-            border: '1px solid rgba(177,141,221,0.1)',
+            border: '1px solid rgba(177,141,221,0.18)',
             background: hoveredItem === 'info' ? 'rgba(121,71,189,0.1)' : 'transparent',
             width: '100%', transition: 'background 0.2s',
           }}
@@ -232,9 +232,9 @@ export function Sidebar({ status }: SidebarProps) {
           onMouseLeave={() => setHoveredItem(null)}
           style={{
             display: 'flex', alignItems: 'center', gap: '12px',
-            padding: collapsed ? '10px 0' : '10px 14px',
+            padding: collapsed ? '8px 0' : '8px 14px',
             justifyContent: collapsed ? 'center' : 'flex-start',
-            borderRadius: '10px', border: '1px solid rgba(177,141,221,0.1)', cursor: 'pointer',
+            borderRadius: '10px', border: '1px solid rgba(177,141,221,0.18)', cursor: 'pointer',
             background: hoveredItem === 'signout' ? 'rgba(255,255,255,0.04)' : 'transparent',
             width: '100%', transition: 'background 0.2s',
           }}
@@ -277,7 +277,7 @@ export function Sidebar({ status }: SidebarProps) {
                 }}>
                   Dashboard Guide
                 </h2>
-                <p style={{ fontFamily: fonts.body, fontSize: '13px', color: colors.text.muted, margin: 0 }}>
+                <p style={{ fontFamily: fonts.body, fontSize: '13px', color: colors.text.secondary, margin: 0 }}>
                   Hover over any card's icon box for quick info. Here's a full overview.
                 </p>
               </div>
@@ -292,7 +292,7 @@ export function Sidebar({ status }: SidebarProps) {
                 onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.1)')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.05)')}
               >
-                <X size={15} color={colors.text.muted} />
+                <X size={15} color={colors.text.secondary} />
               </button>
             </div>
 
