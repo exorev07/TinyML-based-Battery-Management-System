@@ -1,6 +1,6 @@
 export function Footer() {
   return (
-    <footer style={{ padding: '0 24px 10px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '24px' }}>
+    <footer style={{ padding: '0 0 10px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '24px' }}>
       <hr style={{ border: 'none', borderTop: '1px solid rgba(255,255,255,0.26)', width: '100%', maxWidth: '75%' }} />
 
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0px' }}>
