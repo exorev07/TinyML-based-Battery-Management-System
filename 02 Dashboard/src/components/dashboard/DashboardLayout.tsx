@@ -5,7 +5,6 @@ import { useBMSData } from '../../services/mockBmsService'
 import { AlertSeverity } from '../../types/bms'
 import type { BMSData, HistoryPoint, BMSAlert, SystemStatus } from '../../types/bms'
 import { auth } from '../../lib/firebase'
-import { X } from 'lucide-react'
 
 const DEMO_EMAIL = 'demo@cyphev.app'
 
@@ -111,23 +110,10 @@ export function DashboardLayout() {
           <div style={{ width: '460px', borderRadius: '16px', border: '1px solid rgba(141,110,179,0.58)', background: 'rgba(12,10,18,0.92)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', boxShadow: '0 8px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.07)', padding: '32px 32px 28px' }}>
 
             {/* Header */}
-            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '20px' }}>
-              <div>
+            <div style={{ marginBottom: '20px' }}>
                 <p style={{ fontFamily: "'DM Serif Display', serif", fontSize: '22px', fontWeight: 600, color: '#b18ddd', letterSpacing: '0.03em', margin: '0 0 4px' }}>
                   Welcome aboard,
                 </p>
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '14px', color: '#6b7280', margin: 0 }}>
-                  You're in demo mode
-                </p>
-              </div>
-              <button
-                onClick={() => setShowDemoWelcome(false)}
-                onMouseEnter={() => setHoveredDemoClose(true)}
-                onMouseLeave={() => setHoveredDemoClose(false)}
-                style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', width: '30px', height: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: hoveredDemoClose ? '#ffffff' : '#6b7280', transition: 'color 0.2s', flexShrink: 0 }}
-              >
-                <X size={15} />
-              </button>
             </div>
 
             {/* Body */}
@@ -139,8 +125,8 @@ export function DashboardLayout() {
             </p>
 
             {/* Footer */}
-            <div style={{ display: 'flex', alignItems: 'center', fontStyle: "italic", justifyContent: 'space-between' }}>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '12px', color: '#6b7280' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '12px', color: '#6b7280', fontStyle: 'italic' }}>
                 closes in {demoCountdown}s
               </span>
               <button
