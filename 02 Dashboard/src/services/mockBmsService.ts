@@ -137,9 +137,8 @@ export const useBMSData = () => {
             pressure: d.pressure,
             power: d.power,
           }
-          const updated = [...h, point]
-          if (updated.length > 3600) updated.shift()
-          return updated
+          const base = h.length >= 300 ? h.slice(1) : h
+          return [...base, point]
         })
 
         const newAlerts: BMSAlert[] = []

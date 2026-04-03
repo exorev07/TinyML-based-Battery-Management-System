@@ -38,8 +38,8 @@ const METRICS = [
   { key: 'range',   label: 'Range',        fullLabel: 'Estimated Range',          unit: 'km',  icon: Navigation,      dataKey: 'range',   domain: [0, 400] as [number, number],   liveKey: 'remainingRangeKm', gradId: 'aGrad' },
   { key: 'soh',     label: 'SoH',          fullLabel: 'State of Health',          unit: '%',   icon: Heart,           dataKey: 'soh',     domain: [60, 100] as [number, number],  liveKey: 'soh',              gradId: 'aGrad' },
   { key: 'temp',    label: 'Temperature',  fullLabel: 'Pack Temperature',         unit: '°C',  icon: Thermometer,     dataKey: 'temp',    domain: [10, 70] as [number, number],   liveKey: 'packTemp',         gradId: 'aGrad' },
-  { key: 'voltage', label: 'Voltage',      fullLabel: 'Pack Voltage',             unit: 'V',   icon: Zap,             dataKey: 'voltage', domain: [270, 420] as [number, number], liveKey: 'voltage',          gradId: 'aGrad' },
-  { key: 'current', label: 'Current',      fullLabel: 'Pack Current',             unit: 'A',   icon: Activity,        dataKey: 'current', domain: [-150, 180] as [number, number],liveKey: 'current',          gradId: 'aGrad' },
+  { key: 'voltage', label: 'Voltage',      fullLabel: 'Pack Voltage',             unit: 'V',   icon: Zap,             dataKey: 'voltage', domain: [(v: number) => Math.floor(v - 8),  (v: number) => Math.ceil(v + 8)]  as unknown as [number, number], liveKey: 'voltage',          gradId: 'aGrad' },
+  { key: 'current', label: 'Current',      fullLabel: 'Pack Current',             unit: 'A',   icon: Activity,        dataKey: 'current', domain: [(v: number) => Math.floor(v - 15), (v: number) => Math.ceil(v + 15)] as unknown as [number, number], liveKey: 'current',          gradId: 'aGrad' },
   { key: 'alerts',  label: 'Alert Events', fullLabel: 'Alert Event Frequency',    unit: '',    icon: AlertTriangle,   dataKey: 'count',   domain: [0, 'auto'] as [number, string],liveKey: '',                 gradId: 'aGrad' },
 ] as const
 
@@ -236,7 +236,7 @@ export default function AnalyticsPage() {
         <h1 style={{ fontFamily: fonts.heading, fontSize: '24px', fontWeight: 600, color: colors.text.primary, margin: 0 }}>
           Analytics
         </h1>
-        <p style={{ fontFamily: fonts.body, fontSize: '13px', color: colors.text.muted, marginTop: '4px' }}>
+        <p style={{ fontFamily: fonts.body, fontSize: '13px', color: colors.text.secondary, marginTop: '4px' }}>
           Explore telemetry trends across key battery metrics
         </p>
       </div>
@@ -259,17 +259,17 @@ export default function AnalyticsPage() {
                 padding: '5px 11px', borderRadius: '8px', cursor: 'pointer',
                 border: active
                   ? `1px solid rgba(177,141,221,0.45)`
-                  : `1px solid ${hovered ? 'rgba(141,110,179,0.3)' : 'rgba(255,255,255,0.06)'}`,
+                  : `1px solid ${hovered ? 'rgba(141,110,179,0.3)' : 'rgba(255,255,255,0.12)'}`,
                 background: active
                   ? 'rgba(121,71,189,0.18)'
-                  : hovered ? 'rgba(255,255,255,0.04)' : 'transparent',
+                  : hovered ? 'rgba(255,255,255,0.07)' : 'rgba(255,255,255,0.04)',
                 transition: 'all 0.2s',
               }}
             >
-              <MIcon size={14} color={active ? colors.amethyst.light : colors.text.muted} strokeWidth={active ? 2.2 : 1.8} />
+              <MIcon size={14} color={active ? colors.amethyst.light : colors.text.secondary} strokeWidth={active ? 2.2 : 1.8} />
               <span style={{
                 fontFamily: fonts.body, fontSize: '13px', fontWeight: active ? 600 : 400,
-                color: active ? colors.amethyst.light : hovered ? colors.text.secondary : colors.text.muted,
+                color: active ? colors.amethyst.light : hovered ? colors.text.primary : colors.text.secondary,
                 whiteSpace: 'nowrap',
               }}>
                 {m.label}
@@ -292,9 +292,9 @@ export default function AnalyticsPage() {
               fontFamily: fonts.body, fontSize: '12px', fontWeight: 500,
               padding: '0 12px', height: '36px',
               borderRadius: '10px', cursor: 'pointer',
-              background: hasDateFilter ? 'rgba(121,71,189,0.2)' : 'rgba(255,255,255,0.03)',
-              border: `1px solid ${hasDateFilter ? 'rgba(121,71,189,0.4)' : 'rgba(255,255,255,0.08)'}`,
-              color: hasDateFilter ? colors.amethyst.light : colors.text.muted,
+              background: hasDateFilter ? 'rgba(121,71,189,0.2)' : 'rgba(255,255,255,0.07)',
+              border: `1px solid ${hasDateFilter ? 'rgba(121,71,189,0.4)' : 'rgba(255,255,255,0.12)'}`,
+              color: hasDateFilter ? colors.amethyst.light : colors.text.secondary,
               transition: 'background 0.2s, border 0.2s, color 0.2s', whiteSpace: 'nowrap',
             }}
           >
@@ -385,9 +385,9 @@ export default function AnalyticsPage() {
               fontFamily: fonts.body, fontSize: '12px', fontWeight: 500,
               padding: '0 12px', height: '36px',
               borderRadius: '10px', cursor: 'pointer',
-              background: hasTimeFilter ? 'rgba(121,71,189,0.2)' : 'rgba(255,255,255,0.03)',
-              border: `1px solid ${hasTimeFilter ? 'rgba(121,71,189,0.4)' : 'rgba(255,255,255,0.08)'}`,
-              color: hasTimeFilter ? colors.amethyst.light : colors.text.muted,
+              background: hasTimeFilter ? 'rgba(121,71,189,0.2)' : 'rgba(255,255,255,0.07)',
+              border: `1px solid ${hasTimeFilter ? 'rgba(121,71,189,0.4)' : 'rgba(255,255,255,0.12)'}`,
+              color: hasTimeFilter ? colors.amethyst.light : colors.text.secondary,
               transition: 'background 0.2s, border 0.2s, color 0.2s', whiteSpace: 'nowrap',
             }}
           >
@@ -461,7 +461,7 @@ export default function AnalyticsPage() {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
           <span style={{
             fontFamily: fonts.body, fontSize: '13px', fontWeight: 600,
-            color: colors.text.muted, textTransform: 'uppercase', letterSpacing: '0.06em',
+            color: colors.amethyst.light, textTransform: 'uppercase', letterSpacing: '0.06em',
           }}>
             {metric.fullLabel}{metric.unit ? ` (${metric.unit})` : ''}
           </span>
@@ -469,10 +469,10 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Chart */}
-        <div style={{ width: '100%', height: 380 }}>
+        <div style={{ width: '100%', height: 460 }}>
           <ResponsiveContainer>
             {activeMetric === 'alerts' ? (
-              <BarChart data={chartData} margin={{ top: 8, right: 28, bottom: 10, left: -16 }}
+              <BarChart data={chartData as any} margin={{ top: 8, right: 28, bottom: 24, left: -16 }}
                 onMouseMove={handleChartHover} onMouseLeave={handleChartLeave}
               >
                 <defs>
@@ -484,18 +484,18 @@ export default function AnalyticsPage() {
                 <CartesianGrid stroke={chartColors.grid} strokeDasharray="3 3" vertical={false} />
                 <XAxis dataKey="time"
                   ticks={calcTicks(chartData)}
-                  tick={{ fill: chartColors.axis, fontSize: 10, fontFamily: fonts.mono, dy: 8 }}
+                  tick={{ fill: colors.text.secondary, fontSize: 10, fontFamily: fonts.mono, dy: 16 }}
                   axisLine={{ stroke: chartColors.grid }} tickLine={false}
                 />
                 <YAxis allowDecimals={false}
-                  tick={{ fill: chartColors.axis, fontSize: 10, fontFamily: fonts.mono }}
+                  tick={{ fill: colors.text.secondary, fontSize: 10, fontFamily: fonts.mono }}
                   axisLine={false} tickLine={false}
                 />
                 <RechartsTooltip content={<ChartTooltip />} cursor={{ fill: 'rgba(255,255,255,0.03)' }} />
                 <Bar dataKey="count" fill="url(#barGrad)" radius={[4, 4, 0, 0]} name="Alerts" />
               </BarChart>
             ) : (
-              <AreaChart data={chartData} margin={{ top: 8, right: 28, bottom: 10, left: -16 }}
+              <AreaChart data={chartData as any} margin={{ top: 8, right: 28, bottom: 24, left: -16 }}
                 onMouseMove={handleChartHover} onMouseLeave={handleChartLeave}
               >
                 <defs>
@@ -507,11 +507,11 @@ export default function AnalyticsPage() {
                 <CartesianGrid stroke={chartColors.grid} strokeDasharray="3 3" vertical={false} />
                 <XAxis dataKey="time"
                   ticks={calcTicks(filteredHistory)}
-                  tick={{ fill: chartColors.axis, fontSize: 10, fontFamily: fonts.mono, dy: 8 }}
+                  tick={{ fill: colors.text.secondary, fontSize: 10, fontFamily: fonts.mono, dy: 16 }}
                   axisLine={{ stroke: chartColors.grid }} tickLine={false}
                 />
                 <YAxis domain={metric.domain as any}
-                  tick={{ fill: chartColors.axis, fontSize: 10, fontFamily: fonts.mono }}
+                  tick={{ fill: colors.text.secondary, fontSize: 10, fontFamily: fonts.mono }}
                   axisLine={false} tickLine={false}
                   tickFormatter={v => `${v}${metric.unit === '°C' ? '°' : ''}`}
                 />
@@ -585,7 +585,7 @@ export default function AnalyticsPage() {
 
       {/* Footer */}
       <div style={{ display: 'flex', justifyContent: 'flex-end', paddingRight: '4px' }}>
-        <span style={{ fontFamily: fonts.mono, fontSize: '10px', color: colors.text.muted }}>
+        <span style={{ fontFamily: fonts.mono, fontSize: '11px', color: colors.text.secondary }}>
           {chartData.length} data points · 2s sampling interval
         </span>
       </div>

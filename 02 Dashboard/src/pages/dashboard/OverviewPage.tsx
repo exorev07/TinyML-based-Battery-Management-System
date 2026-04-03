@@ -104,7 +104,7 @@ export default function OverviewPage() {
           <h1 style={{ fontFamily: fonts.heading, fontSize: '24px', fontWeight: 600, color: colors.text.primary, margin: 0 }}>
             Dashboard Overview
           </h1>
-          <p style={{ fontFamily: fonts.body, fontSize: '13px', color: colors.text.muted, marginTop: '4px', marginBottom: 0 }}>
+          <p style={{ fontFamily: fonts.body, fontSize: '13px', color: colors.text.secondary, marginTop: '4px', marginBottom: 0 }}>
             Live telemetry &middot; Updated every 2s
           </p>
         </div>
@@ -139,7 +139,7 @@ export default function OverviewPage() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
                   <h3 style={{
                     fontFamily: fonts.body, fontSize: '13px', fontWeight: 600,
-                    color: colors.text.muted, letterSpacing: '0.06em', textTransform: 'uppercase', margin: 0,
+                    color: colors.text.secondary, letterSpacing: '0.06em', textTransform: 'uppercase', margin: 0,
                   }}>
                     Relay Status
                   </h3>
@@ -270,7 +270,7 @@ export default function OverviewPage() {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
             <h3 style={{
               fontFamily: fonts.body, fontSize: '13px', fontWeight: 600,
-              color: colors.text.muted, letterSpacing: '0.06em', textTransform: 'uppercase', margin: 0,
+              color: colors.text.secondary, letterSpacing: '0.06em', textTransform: 'uppercase', margin: 0,
             }}>
               Fan Status
             </h3>

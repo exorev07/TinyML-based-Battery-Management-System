@@ -37,7 +37,7 @@ export default function SettingsPage() {
         <h1 style={{ fontFamily: fonts.heading, fontSize: '24px', fontWeight: 600, color: colors.text.primary, margin: 0 }}>
           Settings
         </h1>
-        <p style={{ fontFamily: fonts.body, fontSize: '13px', color: colors.text.muted, marginTop: '4px' }}>
+        <p style={{ fontFamily: fonts.body, fontSize: '13px', color: colors.text.secondary, marginTop: '4px' }}>
           Configure your dashboard preferences
         </p>
       </div>

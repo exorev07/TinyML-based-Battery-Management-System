@@ -44,7 +44,7 @@ export function StatCard({ label, value, unit, subtext, icon: Icon, color = colo
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <span style={{
           fontFamily: fonts.body, fontSize: '13px', fontWeight: 500,
-          color: colors.text.muted, textTransform: 'uppercase', letterSpacing: '0.05em',
+          color: colors.text.secondary, textTransform: 'uppercase', letterSpacing: '0.05em',
         }}>
           {label}
         </span>

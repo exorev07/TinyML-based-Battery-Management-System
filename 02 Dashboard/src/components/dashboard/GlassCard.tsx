@@ -16,7 +16,7 @@ export function GlassCard({ title, headerRight, children, style }: GlassCardProp
           {title && (
             <h3 style={{
               fontFamily: fonts.body, fontSize: '13px', fontWeight: 600,
-              color: colors.text.muted, letterSpacing: '0.06em',
+              color: colors.text.secondary, letterSpacing: '0.06em',
               textTransform: 'uppercase', margin: 0,
             }}>
               {title}

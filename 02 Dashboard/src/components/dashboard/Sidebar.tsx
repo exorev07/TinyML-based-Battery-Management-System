@@ -81,13 +81,13 @@ export function Sidebar({ status }: SidebarProps) {
           style={{
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             width: '32px', height: '32px', borderRadius: '8px', cursor: 'pointer',
-            background: hoveredItem === 'collapse' ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.04)',
-            border: `1px solid ${hoveredItem === 'collapse' ? 'rgba(141,110,179,0.4)' : 'rgba(255,255,255,0.08)'}`,
+            background: hoveredItem === 'collapse' ? 'rgba(121,71,189,0.18)' : 'rgba(255,255,255,0.04)',
+            border: `1px solid ${hoveredItem === 'collapse' ? 'rgba(177,141,221,0.35)' : 'rgba(255,255,255,0.08)'}`,
             backdropFilter: 'blur(8px)',
             flexShrink: 0, transition: 'background 0.2s',
           }}
         >
-          {collapsed ? <ChevronRight size={18} color={colors.text.muted} /> : <ChevronLeft size={18} color={colors.text.muted} />}
+          {collapsed ? <ChevronRight size={18} color={colors.text.secondary} /> : <ChevronLeft size={18} color={colors.text.secondary} />}
         </button>
       </div>
 
@@ -151,17 +151,18 @@ export function Sidebar({ status }: SidebarProps) {
                 display: 'flex', alignItems: 'center', gap: '12px',
                 padding: collapsed ? '12px 0' : '12px 14px',
                 justifyContent: collapsed ? 'center' : 'flex-start',
-                borderRadius: '10px', border: 'none', cursor: 'pointer',
+                borderRadius: '10px', cursor: 'pointer',
+                border: active ? '1px solid rgba(177,141,221,0.35)' : '1px solid rgba(177,141,221,0.1)',
                 background: active ? 'rgba(121,71,189,0.15)' : hovered ? 'rgba(255,255,255,0.04)' : 'transparent',
                 transition: 'background 0.2s',
                 width: '100%',
               }}
             >
-              <Icon size={20} color={active ? colors.amethyst.light : colors.text.muted} strokeWidth={active ? 2.2 : 1.8} />
+              <Icon size={20} color={active ? colors.amethyst.light : colors.text.secondary} strokeWidth={active ? 2.2 : 1.8} />
               {!collapsed && (
                 <span style={{
                   fontFamily: fonts.body, fontSize: '14px', fontWeight: active ? 600 : 400,
-                  color: active ? colors.amethyst.light : hovered ? colors.text.secondary : colors.text.muted,
+                  color: active ? colors.amethyst.light : hovered ? colors.text.primary : colors.text.secondary,
                   whiteSpace: 'nowrap',
                 }}>
                   {item.label}
@@ -187,16 +188,17 @@ export function Sidebar({ status }: SidebarProps) {
                 display: 'flex', alignItems: 'center', gap: '12px',
                 padding: collapsed ? '12px 0' : '12px 14px',
                 justifyContent: collapsed ? 'center' : 'flex-start',
-                borderRadius: '10px', border: 'none', cursor: 'pointer',
+                borderRadius: '10px', cursor: 'pointer',
+                border: active ? '1px solid rgba(177,141,221,0.35)' : '1px solid rgba(177,141,221,0.1)',
                 background: active ? 'rgba(121,71,189,0.15)' : hovered ? 'rgba(255,255,255,0.04)' : 'transparent',
                 transition: 'background 0.2s', width: '100%',
               }}
             >
-              <SettingsIcon size={20} color={active ? colors.amethyst.light : colors.text.muted} strokeWidth={active ? 2.2 : 1.8} />
+              <SettingsIcon size={20} color={active ? colors.amethyst.light : colors.text.secondary} strokeWidth={active ? 2.2 : 1.8} />
               {!collapsed && (
                 <span style={{
                   fontFamily: fonts.body, fontSize: '14px', fontWeight: active ? 600 : 400,
-                  color: active ? colors.amethyst.light : hovered ? colors.text.secondary : colors.text.muted,
+                  color: active ? colors.amethyst.light : hovered ? colors.text.primary : colors.text.secondary,
                   whiteSpace: 'nowrap',
                 }}>
                   Settings
@@ -214,13 +216,14 @@ export function Sidebar({ status }: SidebarProps) {
             display: 'flex', alignItems: 'center', gap: '12px',
             padding: collapsed ? '10px 0' : '10px 14px',
             justifyContent: collapsed ? 'center' : 'flex-start',
-            borderRadius: '10px', border: 'none', cursor: 'pointer',
+            borderRadius: '10px', cursor: 'pointer',
+            border: '1px solid rgba(177,141,221,0.1)',
             background: hoveredItem === 'info' ? 'rgba(121,71,189,0.1)' : 'transparent',
             width: '100%', transition: 'background 0.2s',
           }}
         >
-          <Info size={18} color={hoveredItem === 'info' ? colors.amethyst.light : colors.text.muted} style={{ transition: 'color 0.2s' }} />
-          {!collapsed && <span style={{ fontFamily: fonts.body, fontSize: '13px', color: hoveredItem === 'info' ? colors.amethyst.light : colors.text.muted, transition: 'color 0.2s' }}>About Cards</span>}
+          <Info size={18} color={hoveredItem === 'info' ? colors.amethyst.light : colors.text.secondary} style={{ transition: 'color 0.2s' }} />
+          {!collapsed && <span style={{ fontFamily: fonts.body, fontSize: '13px', color: hoveredItem === 'info' ? colors.amethyst.light : colors.text.secondary, transition: 'color 0.2s' }}>About Cards</span>}
         </button>
         {/* Sign out */}
         <button
@@ -231,13 +234,13 @@ export function Sidebar({ status }: SidebarProps) {
             display: 'flex', alignItems: 'center', gap: '12px',
             padding: collapsed ? '10px 0' : '10px 14px',
             justifyContent: collapsed ? 'center' : 'flex-start',
-            borderRadius: '10px', border: 'none', cursor: 'pointer',
+            borderRadius: '10px', border: '1px solid rgba(177,141,221,0.1)', cursor: 'pointer',
             background: hoveredItem === 'signout' ? 'rgba(255,255,255,0.04)' : 'transparent',
             width: '100%', transition: 'background 0.2s',
           }}
         >
-          <LogOut size={18} color={colors.text.muted} />
-          {!collapsed && <span style={{ fontFamily: fonts.body, fontSize: '13px', color: colors.text.muted }}>Sign Out</span>}
+          <LogOut size={18} color={hoveredItem === 'signout' ? colors.text.primary : colors.text.secondary} />
+          {!collapsed && <span style={{ fontFamily: fonts.body, fontSize: '13px', color: hoveredItem === 'signout' ? colors.text.primary : colors.text.secondary }}>Sign Out</span>}
         </button>
       </div>
       {/* Info Modal */}

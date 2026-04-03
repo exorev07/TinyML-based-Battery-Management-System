@@ -20,7 +20,7 @@ export function MiniAlertPanel({ alerts }: MiniAlertPanelProps) {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <span style={{
           fontFamily: fonts.body, fontSize: '13px', fontWeight: 600,
-          color: colors.text.muted, letterSpacing: '0.06em', textTransform: 'uppercase',
+          color: colors.text.secondary, letterSpacing: '0.06em', textTransform: 'uppercase',
         }}>
           Recent Events
         </span>
