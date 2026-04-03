@@ -406,7 +406,7 @@ export default function LogsPage() {
         {filtered.length > 0 && (
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            padding: '12px 24px', borderTop: '1px solid rgba(255,255,255,0.06)',
+            padding: '7px 24px', borderTop: '1px solid rgba(255,255,255,0.06)',
             background: 'rgba(255,255,255,0.02)',
           }}>
             <span style={{ fontFamily: fonts.mono, fontSize: '11px', color: colors.text.secondary }}>

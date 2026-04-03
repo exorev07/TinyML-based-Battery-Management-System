@@ -39,7 +39,7 @@ const METRICS = [
   { key: 'soh',     label: 'SoH',          fullLabel: 'State of Health',          unit: '%',   icon: Heart,           dataKey: 'soh',     domain: [60, 100] as [number, number],  liveKey: 'soh',              gradId: 'aGrad' },
   { key: 'temp',    label: 'Temperature',  fullLabel: 'Pack Temperature',         unit: '°C',  icon: Thermometer,     dataKey: 'temp',    domain: [10, 70] as [number, number],   liveKey: 'packTemp',         gradId: 'aGrad' },
   { key: 'voltage', label: 'Voltage',      fullLabel: 'Pack Voltage',             unit: 'V',   icon: Zap,             dataKey: 'voltage', domain: [(v: number) => Math.floor(v - 8),  (v: number) => Math.ceil(v + 8)]  as unknown as [number, number], liveKey: 'voltage',          gradId: 'aGrad' },
-  { key: 'current', label: 'Current',      fullLabel: 'Pack Current',             unit: 'A',   icon: Activity,        dataKey: 'current', domain: [(v: number) => Math.floor(v - 15), (v: number) => Math.ceil(v + 15)] as unknown as [number, number], liveKey: 'current',          gradId: 'aGrad' },
+  { key: 'current', label: 'Current',      fullLabel: 'Pack Current',             unit: 'A',   icon: Activity,        dataKey: 'current', domain: [(v: number) => Math.max(0, Math.floor(v - 15)), (v: number) => Math.ceil(v + 15)] as unknown as [number, number], liveKey: 'current',          gradId: 'aGrad' },
   { key: 'alerts',  label: 'Alert Events', fullLabel: 'Alert Event Frequency',    unit: '',    icon: AlertTriangle,   dataKey: 'count',   domain: [0, 'auto'] as [number, string],liveKey: '',                 gradId: 'aGrad' },
 ] as const
 
@@ -516,6 +516,7 @@ export default function AnalyticsPage() {
                   axisLine={{ stroke: chartColors.grid }} tickLine={false}
                 />
                 <YAxis domain={metric.domain as any}
+                  tickCount={5}
                   tick={{ fill: colors.text.secondary, fontSize: 10, fontFamily: fonts.mono }}
                   axisLine={false} tickLine={false}
                   tickFormatter={v => `${v}${metric.unit === '°C' ? '°' : ''}`}
