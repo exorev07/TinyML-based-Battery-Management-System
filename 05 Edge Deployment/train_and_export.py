@@ -27,7 +27,7 @@ ROOT = Path(__file__).resolve().parent.parent
 BMW_DIR = ROOT / "03 SoC + Range Prediction [Benchmark]" / "BMW_i3_Dataset"
 NASA_DIR = ROOT / "04 SoH + RUL Prediction [Benchmark]" / "NASA_Cleaned_Dataset"
 OUT_DIR = Path(__file__).resolve().parent / "training_metadata"
-HEADER_DIR = Path(__file__).resolve().parent / "esp32_firmware" / "models"
+HEADER_DIR = Path(__file__).resolve().parent / "esp32_firmware" / "main" / "models"
 
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 HEADER_DIR.mkdir(parents=True, exist_ok=True)
@@ -208,8 +208,18 @@ def export_xgb_manual_header(name, model, scaler_mean, scaler_scale, n_base, fil
         all_nodes.append(nodes)
 
     n_trees = len(all_nodes)
-    bs = model.get_params().get('base_score', None)
-    base_score = float(bs) if bs is not None else 0.5
+    # XGBoost 2.0+ auto-learns base_score (returns None from get_params).
+    # Read the actual learned value from the booster config.
+    try:
+        import json as _json
+        _cfg = _json.loads(model.get_booster().save_config())
+        _bs_str = _cfg['learner']['learner_model_param']['base_score']
+        # May be a string like "[7.0148056E1]" — strip brackets
+        _bs_str = str(_bs_str).strip('[]')
+        base_score = float(_bs_str)
+    except Exception:
+        bs = model.get_params().get('base_score', None)
+        base_score = float(bs) if bs is not None else 0.5
 
     lines = []
     lines.append(f"// Auto-generated XGBoost model for ESP32")
