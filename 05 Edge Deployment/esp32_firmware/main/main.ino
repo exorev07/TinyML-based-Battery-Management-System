@@ -543,7 +543,7 @@ void processCycle(const char *data) {
   rulFeats[41] = capFadeSq;
 
   t0 = micros();
-  float rulPred = rul_predict(rulFeats);
+  float rulPred = max(0.0f, rul_predict(rulFeats));
   unsigned long rulUs = micros() - t0;
 
   Serial.print("PRED:RUL:");
