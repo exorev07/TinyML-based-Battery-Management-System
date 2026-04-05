@@ -171,7 +171,14 @@ void firebasePush() {
   // Build JSON payload matching dashboard BMSData shape
   float power = lastVoltage * lastCurrent;
   float soc = (lastSoC >= 0) ? lastSoC : 78.0f;
-  float rangeKm = soc * 3.5f;
+  // ML model predicts Wh/km consumption; convert to range using BMW i3 33 kWh pack
+  float rangeKm;
+  if (lastRange > 0) {
+    float remainingWh = (soc / 100.0f) * 33000.0f;
+    rangeKm = remainingWh / lastRange;
+  } else {
+    rangeKm = soc * 3.5f;  // fallback before first ML prediction
+  }
   float soh = (lastSoH >= 0) ? lastSoH : 92.5f;
   float rulCycles = (lastRUL >= 0) ? lastRUL : 1450;
   float rulDays = rulCycles * 0.68f;
