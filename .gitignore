@@ -74,8 +74,9 @@ out/
 # Logs
 *.log
 
-# Project documentation/papers
-01_papers/
+# Papers
+01 Literature Review/
+06 Paper/
 
 #Claude Code
 .claude/
