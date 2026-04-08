@@ -1,3 +1,26 @@
+@property --cursor-angle {
+  syntax: '<angle>';
+  inherits: true;
+  initial-value: 110deg;
+}
+
+@property --edge-proximity {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+
+@keyframes border-sweep {
+  0%   { --cursor-angle: 110deg; --edge-proximity: 0; }
+  12%  { --edge-proximity: 100; }
+  88%  { --edge-proximity: 100; }
+  100% { --cursor-angle: 465deg; --edge-proximity: 0; }
+}
+
+.cards-animate .border-glow-card {
+  animation: border-sweep 3s ease-in-out forwards;
+}
+
 .border-glow-card {
   --edge-proximity: 0;
   --cursor-angle: 45deg;
@@ -35,9 +58,9 @@
   z-index: -1;
 }
 
-.border-glow-card:not(:hover):not(.sweep-active)::before,
-.border-glow-card:not(:hover):not(.sweep-active)::after,
-.border-glow-card:not(:hover):not(.sweep-active) > .edge-light {
+.border-glow-card:not(:hover):not(:is(.cards-animate *))::before,
+.border-glow-card:not(:hover):not(:is(.cards-animate *))::after,
+.border-glow-card:not(:hover):not(:is(.cards-animate *)) > .edge-light {
   opacity: 0;
   transition: opacity 0.75s ease-in-out;
 }

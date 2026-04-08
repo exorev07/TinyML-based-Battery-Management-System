@@ -17,9 +17,8 @@ const techItems = [
 export function TechStack() {
   const [headingText, setHeadingText] = useState('')
   const [typingDone, setTypingDone] = useState(false)
-  const [animKey, setAnimKey] = useState(0)
-  const [animated, setAnimated] = useState(false)
   const sectionRef = useRef<HTMLDivElement>(null)
+  const gridRef = useRef<HTMLDivElement>(null)
   const cancelRef = useRef(false)
 
   useEffect(() => {
@@ -30,12 +29,13 @@ export function TechStack() {
           cancelRef.current = false
           setHeadingText('')
           setTypingDone(false)
-          setAnimated(false)
-          // slight delay so BorderGlow remounts before animated fires
-          setTimeout(() => {
-            setAnimKey(k => k + 1)
-            setAnimated(true)
-          }, 100)
+          const grid = gridRef.current
+          if (grid) {
+            grid.classList.remove('cards-animate')
+            void grid.offsetWidth
+            grid.classList.add('cards-animate')
+            setTimeout(() => grid.classList.remove('cards-animate'), 4200)
+          }
           let i = 0
           const tick = () => {
             if (cancelRef.current) return
@@ -49,7 +49,6 @@ export function TechStack() {
           cancelRef.current = true
           setHeadingText('')
           setTypingDone(false)
-          setAnimated(false)
         }
       },
       { threshold: 0.3 }
@@ -77,10 +76,10 @@ export function TechStack() {
         </div>
 
         {/* Grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '16px' }}>
-          {techItems.map((t) => (
+        <div ref={gridRef} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '16px' }}>
+          {techItems.map((t, i) => (
             <BorderGlow
-              key={`${t.name}-${animKey}`}
+              key={t.name}
               backgroundColor="#0c0a12"
               borderRadius={12}
               glowColor="270 60 65"
@@ -89,7 +88,7 @@ export function TechStack() {
               glowRadius={40}
               glowIntensity={2}
               coneSpread={25}
-              animated={animated}
+              animIndex={i}
               fillOpacity={0.5}
             >
               <div style={{ padding: '14px 20px 20px', cursor: 'default' }}>
