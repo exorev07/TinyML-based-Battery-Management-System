@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import GradientBlinds from './GradientBlinds'
 
 const members = [
   {
@@ -27,7 +28,23 @@ export function Contact() {
   const [hoveredBtn, setHoveredBtn] = useState<string | null>(null)
   const [hoveredCard, setHoveredCard] = useState<string | null>(null)
   const sectionRef = useRef<HTMLDivElement>(null)
+  const sectionElRef = useRef<HTMLDivElement>(null)
   const cancelRef = useRef(false)
+  const mouseRef = useRef<{ x: number; y: number } | null>(null)
+
+  useEffect(() => {
+    const onMove = (e: PointerEvent) => {
+      const el = sectionElRef.current
+      if (!el) return
+      const rect = el.getBoundingClientRect()
+      const inBounds = e.clientX >= rect.left && e.clientX <= rect.right
+        && e.clientY >= rect.top - 90 && e.clientY <= rect.bottom
+      if (inBounds) mouseRef.current = { x: e.clientX, y: e.clientY }
+      else mouseRef.current = null
+    }
+    document.addEventListener('pointermove', onMove)
+    return () => document.removeEventListener('pointermove', onMove)
+  }, [])
 
   useEffect(() => {
     const full = 'Contact Us'
@@ -60,13 +77,30 @@ export function Contact() {
 
   return (
     <section
+      ref={sectionElRef}
       id="contact"
-      style={{ padding: '0px 0px 96px', scrollMarginTop: '75px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+      style={{ padding: '0px 0px 96px', scrollMarginTop: '75px', display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}
     >
-      <div style={{ width: '100%', maxWidth: '1080px', marginLeft: 'auto', marginRight: 'auto' }}>
+      {/* GradientBlinds background */}
+      <div style={{ position: 'absolute', top: '-90px', left: 0, right: 0, bottom: 0, zIndex: 0, opacity: 0.08, pointerEvents: 'none' }}>
+        <GradientBlinds
+          gradientColors={['#08080a', '#6829c1', '#b18ddd', '#6829c1', '#08080a']}
+          angle={-45}
+          noise={0.15}
+          blindCount={10}
+          blindMinWidth={80}
+          spotlightOpacity={0.6}
+          spotlightRadius={0.5}
+          mouseDampening={0.03}
+          mirrorGradient={false}
+          mixBlendMode="normal"
+          mouseRef={mouseRef}
+        />
+      </div>
+      <div style={{ width: '100%', maxWidth: '1080px', marginLeft: 'auto', marginRight: 'auto', position: 'relative', zIndex: 1 }}>
 
         {/* Header */}
-        <div ref={sectionRef} style={{ textAlign: 'center', marginBottom: '56px' }}>
+        <div ref={sectionRef} style={{ textAlign: 'center', marginBottom: '56px', position: 'relative', zIndex: 1 }}>
           <style>{`@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }`}</style>
           <p style={{ fontFamily: "'DM Serif Display', serif", fontSize: 'clamp(2.5rem, 3vw, 4rem)', fontWeight: 600, color: '#b18ddd', letterSpacing: '0.05em', marginBottom: '12px' }}>
             {headingText}<span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 800, fontSize: '0.75em', color: '#6829c1', marginLeft: '5px', animation: typingDone ? 'blink 1.1s step-start infinite' : 'none', opacity: headingText.length > 0 ? 1 : 0 }}>{'>'}</span>
