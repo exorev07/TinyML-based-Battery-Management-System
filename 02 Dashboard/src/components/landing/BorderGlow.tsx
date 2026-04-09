@@ -107,9 +107,24 @@ const BorderGlow: React.FC<BorderGlowProps> = ({
 
   const glowVars = buildGlowVars(glowColor, glowIntensity);
 
+  const ANIM_DURATION = 5 // seconds, keep in sync with CSS
+
+  const handlePointerEnter = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    const card = cardRef.current
+    if (!card) return
+    const rect = card.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    const y = e.clientY - rect.top
+    const angle = getCursorAngle(card, x, y)
+    // negative delay starts animation mid-cycle at the entry angle
+    const delay = -(angle / 360) * ANIM_DURATION
+    card.style.animationDelay = `${delay}s`
+  }, [getCursorAngle])
+
   return (
     <div
       ref={cardRef}
+      onPointerEnter={handlePointerEnter}
       className={`border-glow-card ${className}`}
       style={{
         '--card-bg': backgroundColor,
