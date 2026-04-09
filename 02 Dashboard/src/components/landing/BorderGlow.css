@@ -21,6 +21,15 @@
   animation: border-sweep 3s ease-in-out forwards;
 }
 
+@keyframes border-rotate {
+  from { --cursor-angle: 0deg; --edge-proximity: 100; }
+  to   { --cursor-angle: 360deg; --edge-proximity: 100; }
+}
+
+.border-glow-card:hover {
+  animation: border-rotate 5s linear infinite;
+}
+
 .border-glow-card {
   --edge-proximity: 0;
   --cursor-angle: 45deg;
@@ -62,7 +71,13 @@
 .border-glow-card:not(:hover):not(:is(.cards-animate *))::after,
 .border-glow-card:not(:hover):not(:is(.cards-animate *)) > .edge-light {
   opacity: 0;
-  transition: opacity 0.75s ease-in-out;
+  transition: none;
+}
+
+.border-glow-card:hover::before,
+.border-glow-card:hover::after,
+.border-glow-card:hover > .edge-light {
+  transition: none;
 }
 
 /* colored mesh-gradient border */

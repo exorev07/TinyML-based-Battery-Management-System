@@ -19,7 +19,6 @@ export function TechStack() {
   const [headingText, setHeadingText] = useState('')
   const [typingDone, setTypingDone] = useState(false)
   const sectionRef = useRef<HTMLDivElement>(null)
-  const gridRef = useRef<HTMLDivElement>(null)
   const cancelRef = useRef(false)
 
   useEffect(() => {
@@ -30,13 +29,6 @@ export function TechStack() {
           cancelRef.current = false
           setHeadingText('')
           setTypingDone(false)
-          const grid = gridRef.current
-          if (grid) {
-            grid.classList.remove('cards-animate')
-            void grid.offsetWidth
-            grid.classList.add('cards-animate')
-            setTimeout(() => grid.classList.remove('cards-animate'), 4200)
-          }
           let i = 0
           const tick = () => {
             if (cancelRef.current) return
@@ -100,7 +92,7 @@ export function TechStack() {
             transparent
           />
         </div>
-        <div ref={gridRef} style={{ position: 'relative', zIndex: 1, display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '16px', maxWidth: '1080px', margin: '0 auto', padding: '0' }}>
+        <div style={{ position: 'relative', zIndex: 1, display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '16px', maxWidth: '1080px', margin: '0 auto', padding: '0' }}>
           {techItems.map((t, i) => (
             <BorderGlow
               key={t.name}
