@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Cpu, Layers, Database, Lock, Code2, FileCode, Zap, BarChart2, Brain } from 'lucide-react'
 import BorderGlow from './BorderGlow'
+import PixelBlast from './PixelBlast'
 
 const techItems = [
   { icon: Cpu,       name: 'ESP32',           category: 'EDGE',     desc: 'Dual-core microcontroller running all sensor polling, ML inference, and relay control on-device.' },
@@ -58,6 +59,7 @@ export function TechStack() {
   }, [])
 
   return (
+    <>
     <section
       id="tech"
       style={{ padding: '0px 0px 96px', scrollMarginTop: '75px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
@@ -75,8 +77,30 @@ export function TechStack() {
           </h2>
         </div>
 
-        {/* Grid */}
-        <div ref={gridRef} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '16px' }}>
+      </div>
+
+      {/* Grid with full-width PixelBlast behind it */}
+      <div style={{ position: 'relative', width: '95%' }}>
+        {/* PixelBlast fills exactly the grid row */}
+        <div style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none', overflow: 'hidden' }}>
+          <PixelBlast
+            variant="circle"
+            pixelSize={4}
+            color="#b18ddd"
+            patternScale={3}
+            patternDensity={1.5}
+            pixelSizeJitter={0}
+            enableRipples
+            rippleSpeed={0.4}
+            rippleThickness={0.12}
+            rippleIntensityScale={1.5}
+            liquid={false}
+            speed={0.5}
+            edgeFade={0.2}
+            transparent
+          />
+        </div>
+        <div ref={gridRef} style={{ position: 'relative', zIndex: 1, display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '16px', maxWidth: '1080px', margin: '0 auto', padding: '0' }}>
           {techItems.map((t, i) => (
             <BorderGlow
               key={t.name}
@@ -102,11 +126,11 @@ export function TechStack() {
             </BorderGlow>
           ))}
         </div>
-
       </div>
 
-      {/* Divider */}
-      <hr style={{ border: 'none', borderTop: '1px solid rgba(255,255,255,0.26)', width: '100%', maxWidth: '75%', margin: '60px auto 0' }} />
     </section>
+    {/* Divider */}
+    <hr style={{ border: 'none', borderTop: '1px solid rgba(255,255,255,0.26)', width: '100%', maxWidth: '75%', margin: '0 auto 0' }} />
+    </>
   )
 }
