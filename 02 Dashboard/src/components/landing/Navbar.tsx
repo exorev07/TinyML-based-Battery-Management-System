@@ -15,11 +15,28 @@ export function Navbar() {
   const [hoveredLink, setHoveredLink] = useState<string | null>(null)
   const [hoveredBtn, setHoveredBtn] = useState<string | null>(null)
   const [scrolled, setScrolled] = useState(false)
+  const [activeSection, setActiveSection] = useState<string | null>(null)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20)
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  useEffect(() => {
+    const sectionIds = navLinks.map(l => l.href.slice(1))
+    const observers: IntersectionObserver[] = []
+    sectionIds.forEach(id => {
+      const el = document.getElementById(id)
+      if (!el) return
+      const obs = new IntersectionObserver(
+        ([entry]) => { if (entry.isIntersecting) setActiveSection(id) },
+        { rootMargin: '-40% 0px -55% 0px', threshold: 0 }
+      )
+      obs.observe(el)
+      observers.push(obs)
+    })
+    return () => observers.forEach(o => o.disconnect())
   }, [])
 
   return (
@@ -73,9 +90,18 @@ export function Navbar() {
                 href={link.href}
                 onMouseEnter={() => setHoveredLink(link.label)}
                 onMouseLeave={() => setHoveredLink(null)}
-                style={{ color: hoveredLink === link.label ? '#b18ddd' : '#9ca3af', fontSize: '14px', padding: '8px 10px', textDecoration: 'none', transition: 'color 0.2s' }}
+                style={{ color: hoveredLink === link.label ? '#b18ddd' : '#9ca3af', fontSize: '14px', padding: '8px 10px', textDecoration: 'none', transition: 'color 0.2s', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px' }}
               >
                 {link.label}
+                <span style={{
+                  display: 'block',
+                  width: '100%',
+                  height: '2px',
+                  borderRadius: '1px',
+                  background: '#ffffff',
+                  opacity: activeSection === link.href.slice(1) ? 0.5 : 0,
+                  transition: 'opacity 0.3s ease',
+                }} />
               </a>
               {i < navLinks.length - 1 && (
                 <span style={{ color: '#4b5563', fontSize: '16px', lineHeight: 1, display: 'flex', alignItems: 'center' }}>·</span>
