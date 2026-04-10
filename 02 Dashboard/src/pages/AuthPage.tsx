@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, sendPasswordResetEmail, confirmPasswordReset, sendEmailVerification, applyActionCode, signOut } from 'firebase/auth'
 import { auth } from '../lib/firebase'
-import carImage from '../assets/Audi_RS5_Auth.png'
+import carImage from '../assets/3D_Render.png'
 import { Eye, EyeOff, Copy, Check, X, ArrowUpRight } from 'lucide-react'
 
 const DEMO_EMAIL = 'demo@cyphev.app'
@@ -243,13 +243,13 @@ export function AuthPage() {
       </div>
 
       {/* Car + Form row */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '60px', width: '100%', maxWidth: '1400px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '90px', width: '100%', maxWidth: '1400px' }}>
 
       {/* Left — Car image */}
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'flex-start', overflow: 'hidden', maxWidth: '800px', marginLeft: '-30px', marginTop: '60px' }}>
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'flex-start', overflow: 'hidden', maxWidth: '600px', marginLeft: '-30px', marginTop: '-20px' }}>
         <img
           src={carImage}
-          alt="Audi RS5"
+          alt="CyphEV 3D Render"
           style={{
             width: '100%',
             objectFit: 'contain',
