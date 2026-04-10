@@ -96,7 +96,7 @@ export function Navbar() {
                 <span style={{
                   display: 'block',
                   width: '100%',
-                  height: '2px',
+                  height: '3px',
                   borderRadius: '1px',
                   background: '#ffffff',
                   opacity: activeSection === link.href.slice(1) ? 0.5 : 0,
@@ -104,7 +104,7 @@ export function Navbar() {
                 }} />
               </a>
               {i < navLinks.length - 1 && (
-                <span style={{ color: '#4b5563', fontSize: '16px', lineHeight: 1, display: 'flex', alignItems: 'center' }}>·</span>
+                <span style={{ color: '#efe4ff', fontSize: '16px', lineHeight: 1, display: 'flex', alignItems: 'center' }}>·</span>
               )}
             </div>
           ))}
