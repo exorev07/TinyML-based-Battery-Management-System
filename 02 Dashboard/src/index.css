@@ -36,21 +36,6 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: #b18ddd;
-  border-radius: 3px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #7947BD;
-}
-
 body {
   font-family: var(--font-sans);
   background: #08080a;
@@ -64,18 +49,24 @@ body {
 }
 
 /* ── Scrollbar ── */
+/* Webkit scrollbar (Chrome, Edge, Safari) */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 10px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(121, 71, 189, 0.4);
-  border-radius: 3px;
+  background: #b18dddab;
+  border-radius: 10px;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+  transition: border 0.2s ease, background-color 0.2s ease;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(121, 71, 189, 0.7);
+  background: #b6b6b6;
+  border: 1px solid transparent;
+  background-clip: padding-box;
 }
 
 /* ── Hide Edge/IE native password reveal button ── */
