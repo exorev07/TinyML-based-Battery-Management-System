@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useRef } from 'react'
+import React, { useRef } from 'react'
 import {
   motion,
   MotionValue,
@@ -32,7 +32,7 @@ export interface DockIconProps extends Omit<
   mouseX?: MotionValue<number>
   className?: string
   children?: React.ReactNode
-  props?: PropsWithChildren
+
 }
 
 export function Dock({
