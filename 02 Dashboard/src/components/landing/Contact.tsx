@@ -34,7 +34,7 @@ export function Contact() {
   const cancelRef = useRef(false)
 
   useEffect(() => {
-    const full = 'contact us'
+    const full = 'Contact Us'
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -71,8 +71,6 @@ export function Contact() {
       style={{ padding: '0px 0px 96px', scrollMarginTop: '130px', display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}
     >
       <style>{`
-        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
-
         /* Leave: photo fades back in after info has slid back down (~0.6s total) */
         .contact-photo {
           transition: opacity 0.25s ease 0.55s, transform 0.3s cubic-bezier(0.22,1,0.36,1) 0.55s;

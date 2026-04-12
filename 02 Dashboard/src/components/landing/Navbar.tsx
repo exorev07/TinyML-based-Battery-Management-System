@@ -20,13 +20,8 @@ export function Navbar() {
 
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20)
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
-
-  useEffect(() => {
     const onScroll = () => {
+      setScrolled(window.scrollY > 20)
       if (window.scrollY < 80) setActiveSection(null)
     }
     window.addEventListener('scroll', onScroll, { passive: true })
