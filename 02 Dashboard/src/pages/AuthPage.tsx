@@ -4,6 +4,8 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfi
 import { auth } from '../lib/firebase'
 import carImage from '../assets/3D_Render.png'
 import { Eye, EyeOff, Copy, Check, X, ArrowUpRight } from 'lucide-react'
+import { HyperspeedCanvas } from '../components/landing/HyperspeedCanvas'
+import { triggerReverseCurtain } from '../components/landing/CurtainLink'
 
 const DEMO_EMAIL = 'demo@cyphev.app'
 const DEMO_PASSWORD = 'DemoPass@123'
@@ -144,7 +146,8 @@ export function AuthPage() {
     setLoading(true)
     try {
       if (mode === 'reset') {
-        await confirmPasswordReset(auth, oobCode!, newPassword)
+        if (!oobCode) { setError('Invalid or expired reset link.'); return }
+        await confirmPasswordReset(auth, oobCode, newPassword)
         setResetDone(true); setCountdown(5)
       } else if (mode === 'forgot') {
         await sendPasswordResetEmail(auth, formData.email)
@@ -187,7 +190,10 @@ export function AuthPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '140px 12.5% 24px', position: 'relative', overflow: 'hidden' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '140px 12.5% 24px', position: 'relative', overflow: 'hidden', background: '#000000' }}>
+
+      {/* Hyperspeed background */}
+      <HyperspeedCanvas style={{ opacity: 0.85 }} />
 
       <style>{`
         @keyframes fadeSlideUp {
@@ -211,13 +217,13 @@ export function AuthPage() {
       `}</style>
 
       {/* Logo + Tagline — fixed at top, won't shift with card height */}
-      <div style={{ position: 'absolute', top: '32px', left: 0, right: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+      <div style={{ position: 'absolute', top: '32px', left: 0, right: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', zIndex: 1 }}>
         <a
           href="/"
           onClick={(e) => { e.preventDefault(); navigate('/') }}
           onMouseEnter={() => setHoveredBtn('logo')}
           onMouseLeave={() => setHoveredBtn(null)}
-          style={{ textDecoration: 'none', transition: 'transform 0.2s', transform: hoveredBtn === 'logo' ? 'translateY(-2px)' : 'translateY(0)', animation: 'fadeSlideDown 0.7s cubic-bezier(0.22,1,0.36,1) both' }}
+          style={{ textDecoration: 'none', transition: 'transform 0.2s', transform: hoveredBtn === 'logo' ? 'translateY(-2px)' : 'translateY(0)', animation: 'fadeSlideDown 0.7s cubic-bezier(0.22,1,0.36,1) 4.5s both' }}
         >
           <span style={{ fontFamily: "'Bitcount Grid Single', monospace", fontSize: '32px', fontWeight: 600, letterSpacing: '0.05em', color: '#ffffff' }}>
             CYPH<span style={{ color: '#b18ddd' }}>EV</span>
@@ -236,14 +242,14 @@ export function AuthPage() {
           backgroundClip: 'text',
           textAlign: 'center',
           width: '75%',
-          animation: 'fadeSlideDown 0.7s cubic-bezier(0.22,1,0.36,1) 0.5s both',
+          animation: 'fadeSlideDown 0.7s cubic-bezier(0.22,1,0.36,1) 4.7s both',
         }}>
           You're clear for takeoff. Let's secure the ride.
         </div>
       </div>
 
       {/* Car + Form row */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '90px', width: '100%', maxWidth: '1400px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '90px', width: '100%', maxWidth: '1400px', position: 'relative', zIndex: 1 }}>
 
       {/* Left — Car image */}
       <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'flex-start', overflow: 'hidden', maxWidth: '600px', marginLeft: '-30px', marginTop: '-20px' }}>
@@ -253,7 +259,7 @@ export function AuthPage() {
           style={{
             width: '100%',
             objectFit: 'contain',
-            animation: 'fadeSlideFromLeft 0.8s cubic-bezier(0.22,1,0.36,1) 1s both',
+            animation: 'fadeSlideFromLeft 0.8s cubic-bezier(0.22,1,0.36,1) 4.5s both',
             mixBlendMode: 'lighten',
           }}
         />
@@ -263,7 +269,7 @@ export function AuthPage() {
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
 
         {/* Demo credentials button — only in demo mode */}
-        {isDemoMode && <div style={{ width: '420px', display: 'flex', justifyContent: 'flex-end', marginBottom: '12px', animation: 'fadeSlideFromRight 0.8s cubic-bezier(0.22,1,0.36,1) 1s both' }}>
+        {isDemoMode && <div style={{ width: '420px', display: 'flex', justifyContent: 'flex-end', marginBottom: '12px', animation: 'fadeSlideFromRight 0.8s cubic-bezier(0.22,1,0.36,1) 4.7s both' }}>
           <button
             onClick={() => setShowDemoModal(true)}
             onMouseEnter={() => setHoveredBtn('demo')}
@@ -295,13 +301,13 @@ export function AuthPage() {
           zIndex: 1,
           width: '420px',
           borderRadius: '16px',
-          border: '1px solid rgba(141, 110, 179, 0.58)',
+          border: '1.5px solid rgba(255,255,255,0.18)',
           background: 'rgba(255,255,255,0.04)',
-          backdropFilter: 'blur(6px)',
-          WebkitBackdropFilter: 'blur(6px)',
-          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.07)',
+          backdropFilter: 'blur(40px) saturate(180%) brightness(110%)',
+          WebkitBackdropFilter: 'blur(40px) saturate(180%) brightness(110%)',
+          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.15), inset 0 -1px 0 rgba(255,255,255,0.05), 0 8px 32px rgba(0,0,0,0.4), 0 2px 8px rgba(0,0,0,0.3)',
           padding: '40px 32px',
-          animation: 'fadeSlideFromRight 0.8s cubic-bezier(0.22,1,0.36,1) 1s both',
+          animation: 'fadeSlideFromRight 0.8s cubic-bezier(0.22,1,0.36,1) 4.7s both',
         }}>
 
         {/* Heading */}
@@ -604,9 +610,9 @@ export function AuthPage() {
       )}
 
       {/* Back to home — centered at bottom */}
-      <div style={{ position: 'absolute', bottom: '32px', left: 0, right: 0, display: 'flex', justifyContent: 'center', animation: 'fadeSlideUp 0.6s cubic-bezier(0.22,1,0.36,1) 1.6s both' }}>
+      <div style={{ position: 'absolute', bottom: '32px', left: 0, right: 0, display: 'flex', justifyContent: 'center', animation: 'fadeSlideUp 0.6s cubic-bezier(0.22,1,0.36,1) 4.7s both' }}>
         <button
-          onClick={() => navigate('/')}
+          onClick={() => triggerReverseCurtain(navigate, '/')}
           onMouseEnter={() => setHoveredBtn('back')}
           onMouseLeave={() => setHoveredBtn(null)}
           style={{

@@ -58,6 +58,47 @@ function BootSequence({ onDone }: { onDone: () => void }) {
   )
 }
 
+// Reverse curtain: sweeps in from right, no terminal, sweeps out to left. Used for "Back to home".
+let reverseBusy = false
+export function triggerReverseCurtain(navigateFn: (path: string) => void, href: string) {
+  if (reverseBusy) return
+  reverseBusy = true
+
+  const curtain = document.createElement('div')
+  Object.assign(curtain.style, {
+    position: 'fixed',
+    inset: '0',
+    background: '#1a1a1a',
+    zIndex: '99999',
+    transform: 'translateX(100%)',
+    pointerEvents: 'none',
+    transition: 'none',
+  })
+  document.body.appendChild(curtain)
+
+  // 1. Sweep in from right
+  animate(
+    curtain,
+    { transform: ['translateX(100%)', 'translateX(0%)'] },
+    { duration: 0.4, easing: [0.76, 0, 0.24, 1] }
+  ).then(() => {
+    // 2. Navigate behind curtain
+    navigateFn(href)
+
+    // 3. Short hold then sweep out to left
+    setTimeout(() => {
+      animate(
+        curtain,
+        { transform: ['translateX(0%)', 'translateX(-100%)'] },
+        { duration: 0.4, easing: [0.76, 0, 0.24, 1] }
+      ).then(() => {
+        document.body.removeChild(curtain)
+        reverseBusy = false
+      })
+    }, 100)
+  })
+}
+
 export function CurtainLink({ href, children, style, className, ...rest }: CurtainLinkProps) {
   const navigate = useNavigate()
   const busy = useRef(false)
