@@ -23,7 +23,6 @@ export function Navbar() {
   useEffect(() => {
     const onScroll = () => {
       setScrolled(window.scrollY > 20)
-      if (window.scrollY < 80) setActiveSection(null)
     }
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
@@ -31,18 +30,22 @@ export function Navbar() {
 
   useEffect(() => {
     const sectionIds = navLinks.map(l => l.href.slice(1))
-    const observers: IntersectionObserver[] = []
-    sectionIds.forEach(id => {
-      const el = document.getElementById(id)
-      if (!el) return
-      const obs = new IntersectionObserver(
-        ([entry]) => { if (entry.isIntersecting) setActiveSection(id) },
-        { rootMargin: '-40% 0px -55% 0px', threshold: 0 }
-      )
-      obs.observe(el)
-      observers.push(obs)
-    })
-    return () => observers.forEach(o => o.disconnect())
+    const updateActive = () => {
+      if (window.scrollY < 80) { setActiveSection(null); return }
+      const midpoint = window.innerHeight * 0.45
+      let best: string | null = null
+      let bestTop = -Infinity
+      sectionIds.forEach(id => {
+        const el = document.getElementById(id)
+        if (!el) return
+        const top = el.getBoundingClientRect().top
+        if (top <= midpoint && top > bestTop) { bestTop = top; best = id }
+      })
+      setActiveSection(best)
+    }
+    window.addEventListener('scroll', updateActive, { passive: true })
+    updateActive()
+    return () => window.removeEventListener('scroll', updateActive)
   }, [])
 
   return (

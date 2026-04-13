@@ -10,7 +10,7 @@ export function Footer() {
           </span>
         </a>
         <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '14px', fontWeight: 200, color: '#ffffffa4', margin: 0 }}>
-          © 2025 Akshita Sondhi & Ekansh Arohi. All rights reserved.
+          © 2026 Akshita Sondhi & Ekansh Arohi. All rights reserved.
         </p>
       </div>
 
