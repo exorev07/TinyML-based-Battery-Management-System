@@ -51,7 +51,6 @@ function buildGradientVars(colors: string[]): Record<string, string> {
   return vars;
 }
 
-
 const BorderGlow: React.FC<BorderGlowProps> = ({
   children,
   className = '',
@@ -76,17 +75,6 @@ const BorderGlow: React.FC<BorderGlowProps> = ({
     return [width / 2, height / 2];
   }, []);
 
-  const getEdgeProximity = useCallback((el: HTMLElement, x: number, y: number) => {
-    const [cx, cy] = getCenterOfElement(el);
-    const dx = x - cx;
-    const dy = y - cy;
-    let kx = Infinity;
-    let ky = Infinity;
-    if (dx !== 0) kx = cx / Math.abs(dx);
-    if (dy !== 0) ky = cy / Math.abs(dy);
-    return Math.min(Math.max(1 / Math.min(kx, ky), 0), 1);
-  }, [getCenterOfElement]);
-
   const getCursorAngle = useCallback((el: HTMLElement, x: number, y: number) => {
     const [cx, cy] = getCenterOfElement(el);
     const dx = x - cx;
@@ -98,7 +86,6 @@ const BorderGlow: React.FC<BorderGlowProps> = ({
     return degrees;
   }, [getCenterOfElement]);
 
-
   useEffect(() => {
     if (!animated || !cardRef.current) return;
     const card = cardRef.current;
@@ -109,21 +96,20 @@ const BorderGlow: React.FC<BorderGlowProps> = ({
     return () => clearTimeout(t);
   }, [animated]);
 
-  const glowVars = buildGlowVars(glowColor, glowIntensity);
-
-  const ANIM_DURATION = animationDuration ?? 3 // seconds, keep in sync with CSS default
+  const ANIM_DURATION = animationDuration ?? 3;
 
   const handlePointerEnter = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
-    const card = cardRef.current
-    if (!card) return
-    const rect = card.getBoundingClientRect()
-    const x = e.clientX - rect.left
-    const y = e.clientY - rect.top
-    const angle = getCursorAngle(card, x, y)
-    // negative delay starts animation mid-cycle at the entry angle
-    const delay = -(angle / 360) * ANIM_DURATION
-    card.style.animationDelay = `${delay}s`
-  }, [getCursorAngle])
+    const card = cardRef.current;
+    if (!card) return;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const angle = getCursorAngle(card, x, y);
+    const delay = -(angle / 360) * ANIM_DURATION;
+    card.style.animationDelay = `${delay}s`;
+  }, [getCursorAngle, ANIM_DURATION]);
+
+  const glowVars = buildGlowVars(glowColor, glowIntensity);
 
   return (
     <div

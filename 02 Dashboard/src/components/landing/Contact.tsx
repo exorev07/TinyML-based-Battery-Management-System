@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import akshitaImg from '../../assets/CyphEV_Dev_Akshita.png'
 import ekanshImg from '../../assets/CyphEV_Dev_Ekansh.png'
 import { Dock, DockIcon } from './Dock'
@@ -33,6 +33,45 @@ export function Contact() {
   const [hoveredCard, setHoveredCard] = useState<string | null>(null)
   const sectionRef = useRef<HTMLDivElement>(null)
   const cancelRef = useRef(false)
+  const gridRef = useRef<HTMLDivElement>(null)
+
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    const grid = gridRef.current
+    if (!grid) return
+    grid.querySelectorAll<HTMLElement>('.border-glow-card').forEach((card) => {
+      const rect = card.getBoundingClientRect()
+      const cx = rect.left + rect.width / 2
+      const cy = rect.top + rect.height / 2
+      const dx = e.clientX - cx
+      const dy = e.clientY - cy
+      const dist = Math.sqrt(dx * dx + dy * dy)
+      const proximity = Math.max(0, Math.round((1 - dist / 400) * 100))
+      let angle = Math.atan2(dy, dx) * (180 / Math.PI) + 90
+      if (angle < 0) angle += 360
+      card.style.setProperty('--edge-proximity', String(proximity))
+      card.style.setProperty('--cursor-angle', `${angle}deg`)
+      if (proximity > 0) card.classList.add('proximity-active')
+      else card.classList.remove('proximity-active')
+    })
+  }, [])
+
+  const handleMouseLeave = useCallback(() => {
+    gridRef.current?.querySelectorAll<HTMLElement>('.border-glow-card').forEach((card) => {
+      card.style.setProperty('--edge-proximity', '0')
+      card.classList.remove('proximity-active')
+    })
+  }, [])
+
+  useEffect(() => {
+    const grid = gridRef.current
+    if (!grid) return
+    grid.addEventListener('mousemove', handleMouseMove)
+    grid.addEventListener('mouseleave', handleMouseLeave)
+    return () => {
+      grid.removeEventListener('mousemove', handleMouseMove)
+      grid.removeEventListener('mouseleave', handleMouseLeave)
+    }
+  }, [handleMouseMove, handleMouseLeave])
 
   useEffect(() => {
     const full = 'Contact Us'
@@ -121,7 +160,7 @@ export function Contact() {
         </div>
 
         {/* Cards */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px', maxWidth: '860px', margin: '0 auto' }}>
+        <div ref={gridRef} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px', maxWidth: '860px', margin: '0 auto' }}>
           {members.map((m, i) => {
             const hovered = hoveredCard === m.name
             return (

@@ -10,6 +10,45 @@
   initial-value: 0;
 }
 
+/* Diagonal glare sweep on tech cards */
+.tech-card-inner::before {
+  content: '';
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background-image: linear-gradient(
+    -45deg,
+    transparent 60%,
+    rgba(255, 255, 255, 0.18) 70%,
+    transparent 100%
+  );
+  background-size: 250% 250%;
+  background-position: -100% -100%;
+  background-repeat: no-repeat;
+  transition: background-position 400ms ease-in-out;
+}
+
+.tech-card-inner:hover::before {
+  background-position: 100% 100%;
+}
+
+@keyframes border-rotate {
+  from { --cursor-angle: 0deg; --edge-proximity: 100; }
+  to   { --cursor-angle: 360deg; --edge-proximity: 100; }
+}
+
+/* Circular sweep on hover — scoped to Contact cards only */
+.contact-glow:hover {
+  animation: border-rotate var(--anim-duration, 3s) linear infinite;
+}
+
+.contact-glow:hover::before,
+.contact-glow:hover::after,
+.contact-glow:hover > .edge-light {
+  transition: none;
+}
+
 @keyframes border-sweep {
   0%   { --cursor-angle: 110deg; --edge-proximity: 0; }
   12%  { --edge-proximity: 100; }
@@ -21,14 +60,6 @@
   animation: border-sweep 3s ease-in-out forwards;
 }
 
-@keyframes border-rotate {
-  from { --cursor-angle: 0deg; --edge-proximity: 100; }
-  to   { --cursor-angle: 360deg; --edge-proximity: 100; }
-}
-
-.border-glow-card:hover {
-  animation: border-rotate var(--anim-duration, 3s) linear infinite;
-}
 
 .border-glow-card {
   --edge-proximity: 0;
@@ -67,16 +98,16 @@
   z-index: -1;
 }
 
-.border-glow-card:not(:hover):not(:is(.cards-animate *))::before,
-.border-glow-card:not(:hover):not(:is(.cards-animate *))::after,
-.border-glow-card:not(:hover):not(:is(.cards-animate *)) > .edge-light {
+.border-glow-card:not(:is(.contact-glow:hover)):not(:is(.cards-animate *)):not(.proximity-active)::before,
+.border-glow-card:not(:is(.contact-glow:hover)):not(:is(.cards-animate *)):not(.proximity-active)::after,
+.border-glow-card:not(:is(.contact-glow:hover)):not(:is(.cards-animate *)):not(.proximity-active) > .edge-light {
   opacity: 0;
   transition: none;
 }
 
-.border-glow-card:hover::before,
-.border-glow-card:hover::after,
-.border-glow-card:hover > .edge-light {
+.border-glow-card.proximity-active::before,
+.border-glow-card.proximity-active::after,
+.border-glow-card.proximity-active > .edge-light {
   transition: none;
 }
 

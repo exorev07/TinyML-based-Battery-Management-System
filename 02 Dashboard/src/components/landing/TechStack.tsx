@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { Cpu, Layers, Database, Lock, Code2, FileCode, Zap, BarChart2, Brain } from 'lucide-react'
 import BorderGlow from './BorderGlow'
 import PixelBlast from './PixelBlast'
@@ -15,11 +15,54 @@ const techItems = [
   { icon: BarChart2, name: 'Recharts',        category: 'FRONTEND', desc: 'Declarative charting library rendering live voltage, current, and temperature history graphs.' },
 ]
 
+// Max distance (px) at which a card starts to react to the pointer
+const GLOW_REACH = 320
+
 export function TechStack() {
   const [headingText, setHeadingText] = useState('')
   const [typingDone, setTypingDone] = useState(false)
   const sectionRef = useRef<HTMLDivElement>(null)
   const cancelRef = useRef(false)
+  const gridRef = useRef<HTMLDivElement>(null)
+
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    const grid = gridRef.current
+    if (!grid) return
+    const cards = grid.querySelectorAll<HTMLElement>('.border-glow-card')
+    cards.forEach((card) => {
+      const rect = card.getBoundingClientRect()
+      const cx = rect.left + rect.width / 2
+      const cy = rect.top + rect.height / 2
+      const dx = e.clientX - cx
+      const dy = e.clientY - cy
+      const dist = Math.sqrt(dx * dx + dy * dy)
+
+      // 0 at GLOW_REACH, 100 at center
+      const proximity = Math.max(0, Math.round((1 - dist / GLOW_REACH) * 100))
+
+      // Angle: atan2(dy,dx) + 90° so 0° points up
+      let angle = Math.atan2(dy, dx) * (180 / Math.PI) + 90
+      if (angle < 0) angle += 360
+
+      card.style.setProperty('--edge-proximity', String(proximity))
+      card.style.setProperty('--cursor-angle', `${angle}deg`)
+      if (proximity > 0) {
+        card.classList.add('proximity-active')
+      } else {
+        card.classList.remove('proximity-active')
+      }
+
+    })
+  }, [])
+
+  const handleMouseLeave = useCallback(() => {
+    const grid = gridRef.current
+    if (!grid) return
+    grid.querySelectorAll<HTMLElement>('.border-glow-card').forEach((card) => {
+      card.style.setProperty('--edge-proximity', '0')
+      card.classList.remove('proximity-active')
+    })
+  }, [])
 
   useEffect(() => {
     const full = 'Tech Stack'
@@ -50,6 +93,17 @@ export function TechStack() {
     return () => observer.disconnect()
   }, [])
 
+  useEffect(() => {
+    const grid = gridRef.current
+    if (!grid) return
+    grid.addEventListener('mousemove', handleMouseMove)
+    grid.addEventListener('mouseleave', handleMouseLeave)
+    return () => {
+      grid.removeEventListener('mousemove', handleMouseMove)
+      grid.removeEventListener('mouseleave', handleMouseLeave)
+    }
+  }, [handleMouseMove, handleMouseLeave])
+
   return (
     <>
     <section
@@ -71,7 +125,7 @@ export function TechStack() {
       </div>
 
       {/* Grid with full-width PixelBlast behind it */}
-      <div style={{ position: 'relative', width: '95%' }}>
+      <div ref={gridRef} style={{ position: 'relative', width: '95%' }}>
         {/* PixelBlast fills exactly the grid row */}
         <div style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none', overflow: 'hidden' }}>
           <PixelBlast
@@ -92,7 +146,7 @@ export function TechStack() {
           />
         </div>
         <div style={{ position: 'relative', zIndex: 1, display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '16px', maxWidth: '1080px', margin: '0 auto', padding: '0' }}>
-          {techItems.map((t, i) => (
+          {techItems.map((t) => (
             <BorderGlow
               key={t.name}
               backgroundColor="#0c0a12"
@@ -101,12 +155,11 @@ export function TechStack() {
               colors={['#6d28d9', '#c4b5fd', '#a78bfa']}
               edgeSensitivity={5}
               glowRadius={40}
-              glowIntensity={2}
+              glowIntensity={3.5}
               coneSpread={25}
-              animIndex={i}
               fillOpacity={0.5}
             >
-              <div style={{ padding: '14px 20px 20px', cursor: 'default' }}>
+              <div className="tech-card-inner" style={{ padding: '14px 20px 20px', cursor: 'default', position: 'relative', overflow: 'hidden' }}>
                 <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '10px', fontWeight: 700, letterSpacing: '0.12em', color: '#6b7280', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '4px', padding: '2px 8px', display: 'inline-block', marginBottom: '8px' }}>
                   {t.category}
                 </span>
