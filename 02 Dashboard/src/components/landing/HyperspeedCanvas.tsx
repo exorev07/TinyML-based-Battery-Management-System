@@ -40,7 +40,7 @@ export function HyperspeedCanvas({ style }: { style?: React.CSSProperties }) {
           Math.sin(progress * Math.PI * uFreq.y + time + Math.PI / 2) * uAmp.y - Math.sin(movementProgressFix * Math.PI * uFreq.y + time + Math.PI / 2) * uAmp.y,
           0
         )
-        return d.multiply(new THREE.Vector3(2, 0.4, 1)).add(new THREE.Vector3(0, 0, -3))
+        return d.multiply(new THREE.Vector3(0.5, 0.4, 1)).add(new THREE.Vector3(0, 0, -3))
       }
     }
 
@@ -54,7 +54,7 @@ export function HyperspeedCanvas({ style }: { style?: React.CSSProperties }) {
 
     const options = {
       distortion: xyDistortion,
-      length: 400, roadWidth: 18, islandWidth: 2, lanesPerRoad: 3,
+      length: 400, roadWidth: 18, islandWidth: 0, lanesPerRoad: 3,
       fov: 90, carLightsFade: 0.4,
       totalSideLightSticks: 100, lightPairsPerRoadWay: 80,
       shoulderLinesWidthPercentage: 0.05, brokenLinesWidthPercentage: 0.1, brokenLinesLengthPercentage: 0.5,
